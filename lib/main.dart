@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/dashboard.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/config/routes.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/dashboard/dashboard_screen.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/style/colors.dart';
 
 void main() {
@@ -14,13 +15,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Starlinex - Quản lý',
       theme: ThemeData(
         useMaterial3: true,
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: AppColors.primaryBg,
       ),
-      home: Dashboard(),
+      routes: routes,
+      initialRoute: DashboardScreen.routeName,
     );
   }
 }
