@@ -1,25 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/component/appBarActionItems.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/component/barChart.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/component/bar_chart.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/component/header.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/component/historyTable.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/component/history_table.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/component/infoCard.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/component/paymentDetailList.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/component/sideMenu.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/component/side_bar_menu.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/config/responsive.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/config/size_config.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/style/colors.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/style/style.dart';
 
-class Dashboard extends StatelessWidget {
-  GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
+class DashboardScreen extends StatefulWidget {
+  static const routeName = '/dashboard';
+  const DashboardScreen({Key? key}) : super(key: key);
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
       key: _drawerKey,
-      drawer: const SizedBox(width: 100, child: SideMenu()),
+      drawer: !Responsive.isDesktop(context) ? const SizedBox(width: 100, child: SideBarMenu()) : null,
       appBar: !Responsive.isDesktop(context)
           ? AppBar(
               elevation: 0,
@@ -28,12 +36,12 @@ class Dashboard extends StatelessWidget {
                   onPressed: () {
                     _drawerKey.currentState?.openDrawer();
                   },
-                  icon: Icon(Icons.menu, color: AppColors.black)),
-              actions: [
+                  icon: const Icon(Icons.menu, color: AppColors.black)),
+              actions: const [
                 AppBarActionItems(),
               ],
             )
-          : PreferredSize(
+          : const PreferredSize(
               preferredSize: Size.zero,
               child: SizedBox(),
             ),
@@ -43,18 +51,18 @@ class Dashboard extends StatelessWidget {
           children: [
             if (Responsive.isDesktop(context))
               const Expanded(
-                flex: 1,
-                child: SideMenu(),
+                flex: 2,
+                child: SideBarMenu(),
               ),
             Expanded(
-                flex: 10,
+                flex: 8,
                 child: SafeArea(
                   child: SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(vertical: 30, horizontal: 30),
+                    padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Header(),
+                        const Header(title: 'Dashboard'),
                         SizedBox(
                           height: SizeConfig.blockSizeVertical * 4,
                         ),
@@ -66,13 +74,25 @@ class Dashboard extends StatelessWidget {
                             alignment: WrapAlignment.spaceBetween,
                             children: [
                               InfoCard(
-                                  icon: 'icons/credit-card.svg',
-                                  label: 'Transafer via \nCard number',
-                                  amount: '\$1200'),
+                                icon: 'icons/branch.svg',
+                                label: 'Chi nhánh \nHoạt Động',
+                                amount: '15',
+                              ),
                               InfoCard(
-                                  icon: 'icons/transfer.svg', label: 'Transafer via \nOnline Banks', amount: '\$150'),
-                              InfoCard(icon: 'icons/bank.svg', label: 'Transafer \nSame Bank', amount: '\$1500'),
-                              InfoCard(icon: 'icons/invoice.svg', label: 'Transafer to \nOther Bank', amount: '\$1500'),
+                                icon: 'icons/credit-card.svg',
+                                label: 'Phim \nĐang Chiếu',
+                                amount: '12',
+                              ),
+                              InfoCard(
+                                icon: 'icons/showtime.svg',
+                                label: 'Suất Chiếu \nTrong Ngày',
+                                amount: '32',
+                              ),
+                              InfoCard(
+                                icon: 'icons/salary.svg',
+                                label: 'Lợi Nhuận \nTrong Ngày',
+                                amount: '15000000',
+                              ),
                             ],
                           ),
                         ),
@@ -87,7 +107,7 @@ class Dashboard extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 PrimaryText(
-                                  text: 'Balance',
+                                  text: 'Lợi nhuận',
                                   size: 16,
                                   fontWeight: FontWeight.w400,
                                   color: AppColors.secondary,
@@ -106,14 +126,14 @@ class Dashboard extends StatelessWidget {
                         SizedBox(
                           height: SizeConfig.blockSizeVertical * 3,
                         ),
-                        Container(
+                        const SizedBox(
                           height: 180,
                           child: BarChartCopmponent(),
                         ),
                         SizedBox(
                           height: SizeConfig.blockSizeVertical * 5,
                         ),
-                        Column(
+                        const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             PrimaryText(text: 'History', size: 30, fontWeight: FontWeight.w800),
@@ -128,21 +148,21 @@ class Dashboard extends StatelessWidget {
                         SizedBox(
                           height: SizeConfig.blockSizeVertical * 3,
                         ),
-                        HistoryTable(),
-                        if (!Responsive.isDesktop(context)) PaymentDetailList()
+                        const HistoryTable(),
+                        if (!Responsive.isDesktop(context)) const PaymentDetailList()
                       ],
                     ),
                   ),
                 )),
             if (Responsive.isDesktop(context))
               Expanded(
-                flex: 4,
+                flex: 3,
                 child: SafeArea(
                   child: Container(
                     width: double.infinity,
                     height: SizeConfig.screenHeight,
-                    decoration: BoxDecoration(color: AppColors.secondaryBg),
-                    child: SingleChildScrollView(
+                    decoration: const BoxDecoration(color: AppColors.secondaryBg),
+                    child: const SingleChildScrollView(
                       padding: EdgeInsets.symmetric(vertical: 30, horizontal: 30),
                       child: Column(
                         children: [

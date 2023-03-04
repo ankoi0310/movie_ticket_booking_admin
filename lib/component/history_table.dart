@@ -25,14 +25,6 @@ class HistoryTable extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               children: [
-                Container(
-                  alignment: Alignment.centerLeft,
-                  padding: const EdgeInsets.only(top: 10.0, bottom: 10.0, left: 20.0),
-                  child: CircleAvatar(
-                    radius: 17,
-                    backgroundImage: NetworkImage(transactionHistory[index]["avatar"]!),
-                  ),
-                ),
                 PrimaryText(
                   text: transactionHistory[index]["label"]!,
                   size: 16,

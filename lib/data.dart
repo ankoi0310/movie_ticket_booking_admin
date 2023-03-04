@@ -6,7 +6,7 @@ const recentActivities = [
 ];
 
 const upcomingPayments = [
-  {"icon": 'assets/icons/home.svg', "label": 'Home Rent', "amount": "\$1500"},
+  {"icon": 'assets/icons/dashboard.svg', "label": 'Home Rent', "amount": "\$1500"},
   {"icon": 'assets/icons/salary.svg', "label": 'Car Insurance', "amount": "\$150"},
 ];
 
