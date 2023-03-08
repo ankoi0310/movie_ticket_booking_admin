@@ -1,8 +1,24 @@
-const recentActivities = [
-  {"icon": 'assets/icons/drop.svg', "label": 'Water Bill', "amount": "\$120"},
-  {"icon": 'assets/icons/salary.svg', "label": 'Income Salary', "amount": "\$4500"},
-  {"icon": 'assets/icons/electricity.svg', "label": 'Electric Bill', "amount": "\$150"},
-  {"icon": 'assets/icons/wifi.svg', "label": 'Internet Bill', "amount": "\$60"},
+const ticketPurchaseHistory = [
+  {
+    'label': 'Nhà bà Nữ',
+    'amount': 12,
+    'price': 120000,
+  },
+  {
+    'label': 'Nhà bà Nữ',
+    'amount': 50,
+    'price': 4500000,
+  },
+  {
+    'label': 'Nhà bà Nữ',
+    'amount': 10,
+    'price': 150000,
+  },
+  {
+    'label': 'Dr. Strange in the Multiverse of Madness',
+    'amount': 5,
+    'price': 60000,
+  },
 ];
 
 const upcomingPayments = [

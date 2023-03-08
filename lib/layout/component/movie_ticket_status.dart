@@ -3,34 +3,32 @@ import 'package:flutter_svg/svg.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/style/colors.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/style/style.dart';
 
-class PaymentListTile extends StatelessWidget {
+class MovieTicketStatus extends StatelessWidget {
   final String icon;
   final String label;
   final String amount;
 
-  const PaymentListTile({required this.icon, required this.label, required this.amount});
+  const MovieTicketStatus({Key? key, required this.icon, required this.label, required this.amount}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      contentPadding: EdgeInsets.only(left: 0, right: 20),
+      contentPadding: const EdgeInsets.only(left: 0, right: 20),
       visualDensity: VisualDensity.standard,
       leading: Container(
-          width: 50,
-          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: SvgPicture.asset(
-            icon,
-            width: 20,
-          )),
+        width: 50,
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: SvgPicture.asset(icon, width: 20),
+      ),
       title: PrimaryText(text: label, size: 14, fontWeight: FontWeight.w500),
       subtitle: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          PrimaryText(
+          const PrimaryText(
             text: 'Successfully',
             size: 12,
             fontWeight: FontWeight.w400,
