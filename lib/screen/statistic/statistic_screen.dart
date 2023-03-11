@@ -8,6 +8,7 @@ import 'package:movie_ticket_booking_admin_flutter_nlu/util/app_util.dart';
 
 class StatisticScreen extends StatefulWidget {
   static const String routeName = '/statistic';
+
   const StatisticScreen({Key? key}) : super(key: key);
 
   @override
@@ -25,133 +26,261 @@ class _StatisticScreenState extends State<StatisticScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            DropdownButton2(
-              isExpanded: true,
-              items: AppUtil.createDropdownList(data: statisticType),
-              value: selectedType,
-              onChanged: (value) {
-                chooseType(value);
-              },
-              buttonStyleData: ButtonStyleData(
-                width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.2 : SizeConfig.screenWidth,
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
-                ),
-                elevation: 2,
-              ),
-              iconStyleData: const IconStyleData(
-                icon: Icon(Icons.arrow_forward_ios_outlined),
-                iconSize: 14,
-                iconEnabledColor: Colors.white,
-                iconDisabledColor: Colors.grey,
-              ),
-              dropdownStyleData: DropdownStyleData(
-                maxHeight: 200,
-                width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.2 : SizeConfig.screenWidth,
-                decoration: const BoxDecoration(color: Colors.black),
-                elevation: 8,
-                scrollbarTheme: ScrollbarThemeData(
-                  radius: const Radius.circular(40),
-                  thickness: MaterialStateProperty.all<double>(6),
-                  thumbVisibility: MaterialStateProperty.all<bool>(true),
-                ),
-              ),
-              menuItemStyleData: const MenuItemStyleData(
-                height: 40,
-                padding: EdgeInsets.symmetric(horizontal: 14),
-              ),
-              underline: Container(),
-            ),
-            const SizedBox(width: 20),
-            if (items.isNotEmpty) ...[
-              DropdownButton2<dynamic>(
-                isExpanded: true,
-                items: items,
-                value: selectedDetailItem,
-                onChanged: (value) {
-                  setState(() {
-                    selectedDetailItem = value;
-                  });
-                },
-                buttonStyleData: ButtonStyleData(
-                  width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.2 : SizeConfig.screenWidth,
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5),
+        Responsive.isDesktop(context)
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  DropdownButton2(
+                    isExpanded: true,
+                    items: AppUtil.createDropdownList(data: statisticType),
+                    value: selectedType,
+                    onChanged: (value) {
+                      chooseType(value);
+                    },
+                    buttonStyleData: ButtonStyleData(
+                      width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.5),
+                      ),
+                      elevation: 2,
+                    ),
+                    iconStyleData: const IconStyleData(
+                      icon: Icon(Icons.arrow_forward_ios_outlined),
+                      iconSize: 14,
+                      iconEnabledColor: Colors.white,
+                      iconDisabledColor: Colors.grey,
+                    ),
+                    dropdownStyleData: DropdownStyleData(
+                      maxHeight: 200,
+                      width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                      decoration: const BoxDecoration(color: Colors.black),
+                      elevation: 8,
+                      scrollbarTheme: ScrollbarThemeData(
+                        radius: const Radius.circular(40),
+                        thickness: MaterialStateProperty.all<double>(6),
+                        thumbVisibility: MaterialStateProperty.all<bool>(true),
+                      ),
+                    ),
+                    menuItemStyleData: const MenuItemStyleData(
+                      height: 40,
+                      padding: EdgeInsets.symmetric(horizontal: 14),
+                    ),
+                    underline: Container(),
                   ),
-                  elevation: 2,
-                ),
-                iconStyleData: const IconStyleData(
-                  icon: Icon(Icons.arrow_forward_ios_outlined),
-                  iconSize: 14,
-                  iconEnabledColor: Colors.white,
-                  iconDisabledColor: Colors.grey,
-                ),
-                dropdownStyleData: DropdownStyleData(
-                  maxHeight: 200,
-                  width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.2 : SizeConfig.screenWidth,
-                  decoration: const BoxDecoration(color: Colors.black),
-                  elevation: 8,
-                  scrollbarTheme: ScrollbarThemeData(
-                    radius: const Radius.circular(40),
-                    thickness: MaterialStateProperty.all<double>(6),
-                    thumbVisibility: MaterialStateProperty.all<bool>(true),
+                  const SizedBox(width: 20),
+                  if (items.isNotEmpty) ...[
+                    DropdownButton2<dynamic>(
+                      isExpanded: true,
+                      items: items,
+                      value: selectedDetailItem,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedDetailItem = value;
+                        });
+                      },
+                      buttonStyleData: ButtonStyleData(
+                        width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.5),
+                        ),
+                        elevation: 2,
+                      ),
+                      iconStyleData: const IconStyleData(
+                        icon: Icon(Icons.arrow_forward_ios_outlined),
+                        iconSize: 14,
+                        iconEnabledColor: Colors.white,
+                        iconDisabledColor: Colors.grey,
+                      ),
+                      dropdownStyleData: DropdownStyleData(
+                        maxHeight: 200,
+                        width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                        decoration: const BoxDecoration(color: Colors.black),
+                        elevation: 8,
+                        scrollbarTheme: ScrollbarThemeData(
+                          radius: const Radius.circular(40),
+                          thickness: MaterialStateProperty.all<double>(6),
+                          thumbVisibility: MaterialStateProperty.all<bool>(true),
+                        ),
+                      ),
+                      menuItemStyleData: const MenuItemStyleData(
+                        height: 40,
+                        padding: EdgeInsets.symmetric(horizontal: 14),
+                      ),
+                      underline: Container(),
+                    ),
+                    const SizedBox(width: 20),
+                  ],
+                  DropdownButton2(
+                    isExpanded: true,
+                    items: AppUtil.createDropdownList(data: statisticRange),
+                    value: selectedRange,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedRange = value.toString();
+                      });
+                    },
+                    buttonStyleData: ButtonStyleData(
+                      width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.5),
+                      ),
+                      elevation: 2,
+                    ),
+                    iconStyleData: const IconStyleData(
+                      icon: Icon(Icons.arrow_forward_ios_outlined),
+                      iconSize: 14,
+                      iconEnabledColor: Colors.white,
+                      iconDisabledColor: Colors.grey,
+                    ),
+                    dropdownStyleData: DropdownStyleData(
+                      maxHeight: 200,
+                      width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                      decoration: const BoxDecoration(color: Colors.black),
+                      elevation: 8,
+                      scrollbarTheme: ScrollbarThemeData(
+                        radius: const Radius.circular(40),
+                        thickness: MaterialStateProperty.all<double>(6),
+                        thumbVisibility: MaterialStateProperty.all<bool>(true),
+                      ),
+                    ),
+                    menuItemStyleData: const MenuItemStyleData(
+                      height: 40,
+                      padding: EdgeInsets.symmetric(horizontal: 14),
+                    ),
+                    underline: Container(),
                   ),
-                ),
-                menuItemStyleData: const MenuItemStyleData(
-                  height: 40,
-                  padding: EdgeInsets.symmetric(horizontal: 14),
-                ),
-                underline: Container(),
+                ],
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  DropdownButton2(
+                    isExpanded: true,
+                    items: AppUtil.createDropdownList(data: statisticType),
+                    value: selectedType,
+                    onChanged: (value) {
+                      chooseType(value);
+                    },
+                    buttonStyleData: ButtonStyleData(
+                      width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.5),
+                      ),
+                      elevation: 2,
+                    ),
+                    iconStyleData: const IconStyleData(
+                      icon: Icon(Icons.arrow_forward_ios_outlined),
+                      iconSize: 14,
+                      iconEnabledColor: Colors.white,
+                      iconDisabledColor: Colors.grey,
+                    ),
+                    dropdownStyleData: DropdownStyleData(
+                      maxHeight: 200,
+                      width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                      decoration: const BoxDecoration(color: Colors.black),
+                      elevation: 8,
+                      scrollbarTheme: ScrollbarThemeData(
+                        radius: const Radius.circular(40),
+                        thickness: MaterialStateProperty.all<double>(6),
+                        thumbVisibility: MaterialStateProperty.all<bool>(true),
+                      ),
+                    ),
+                    menuItemStyleData: const MenuItemStyleData(
+                      height: 40,
+                      padding: EdgeInsets.symmetric(horizontal: 14),
+                    ),
+                    underline: Container(),
+                  ),
+                  const SizedBox(height: 20),
+                  if (items.isNotEmpty) ...[
+                    DropdownButton2<dynamic>(
+                      isExpanded: true,
+                      items: items,
+                      value: selectedDetailItem,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedDetailItem = value;
+                        });
+                      },
+                      buttonStyleData: ButtonStyleData(
+                        width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.5),
+                        ),
+                        elevation: 2,
+                      ),
+                      iconStyleData: const IconStyleData(
+                        icon: Icon(Icons.arrow_forward_ios_outlined),
+                        iconSize: 14,
+                        iconEnabledColor: Colors.white,
+                        iconDisabledColor: Colors.grey,
+                      ),
+                      dropdownStyleData: DropdownStyleData(
+                        maxHeight: 200,
+                        width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                        decoration: const BoxDecoration(color: Colors.black),
+                        elevation: 8,
+                        scrollbarTheme: ScrollbarThemeData(
+                          radius: const Radius.circular(40),
+                          thickness: MaterialStateProperty.all<double>(6),
+                          thumbVisibility: MaterialStateProperty.all<bool>(true),
+                        ),
+                      ),
+                      menuItemStyleData: const MenuItemStyleData(
+                        height: 40,
+                        padding: EdgeInsets.symmetric(horizontal: 14),
+                      ),
+                      underline: Container(),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                  DropdownButton2(
+                    isExpanded: true,
+                    items: AppUtil.createDropdownList(data: statisticRange),
+                    value: selectedRange,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedRange = value.toString();
+                      });
+                    },
+                    buttonStyleData: ButtonStyleData(
+                      width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.5),
+                      ),
+                      elevation: 2,
+                    ),
+                    iconStyleData: const IconStyleData(
+                      icon: Icon(Icons.arrow_forward_ios_outlined),
+                      iconSize: 14,
+                      iconEnabledColor: Colors.white,
+                      iconDisabledColor: Colors.grey,
+                    ),
+                    dropdownStyleData: DropdownStyleData(
+                      maxHeight: 200,
+                      width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                      decoration: const BoxDecoration(color: Colors.black),
+                      elevation: 8,
+                      scrollbarTheme: ScrollbarThemeData(
+                        radius: const Radius.circular(40),
+                        thickness: MaterialStateProperty.all<double>(6),
+                        thumbVisibility: MaterialStateProperty.all<bool>(true),
+                      ),
+                    ),
+                    menuItemStyleData: const MenuItemStyleData(
+                      height: 40,
+                      padding: EdgeInsets.symmetric(horizontal: 14),
+                    ),
+                    underline: Container(),
+                  ),
+                ],
               ),
-              const SizedBox(width: 20),
-            ],
-            DropdownButton2(
-              isExpanded: true,
-              items: AppUtil.createDropdownList(data: statisticRange),
-              value: selectedRange,
-              onChanged: (value) {
-                setState(() {
-                  selectedRange = value.toString();
-                });
-              },
-              buttonStyleData: ButtonStyleData(
-                width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.2 : SizeConfig.screenWidth,
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
-                ),
-                elevation: 2,
-              ),
-              iconStyleData: const IconStyleData(
-                icon: Icon(Icons.arrow_forward_ios_outlined),
-                iconSize: 14,
-                iconEnabledColor: Colors.white,
-                iconDisabledColor: Colors.grey,
-              ),
-              dropdownStyleData: DropdownStyleData(
-                maxHeight: 200,
-                width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.2 : SizeConfig.screenWidth,
-                decoration: const BoxDecoration(color: Colors.black),
-                elevation: 8,
-                scrollbarTheme: ScrollbarThemeData(
-                  radius: const Radius.circular(40),
-                  thickness: MaterialStateProperty.all<double>(6),
-                  thumbVisibility: MaterialStateProperty.all<bool>(true),
-                ),
-              ),
-              menuItemStyleData: const MenuItemStyleData(
-                height: 40,
-                padding: EdgeInsets.symmetric(horizontal: 14),
-              ),
-              underline: Container(),
-            ),
-          ],
-        ),
         const SizedBox(height: 40),
         SizedBox(
           height: SizeConfig.screenHeight * 0.6,

@@ -1,88 +1,66 @@
-import 'package:flutter/material.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/screen/advertisement/advertisement_screen.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/screen/branch/branch_screen.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/screen/dashboard/dashboard_screen.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/screen/genre/genre_screen.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/screen/movie/movie_screen.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/screen/order/order_screen.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/screen/promotion/promotion_screen.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/screen/showtime/showtime_screen.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/screen/statistic/statistic_screen.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/screen/user/user_screen.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 
 class MenuItem {
   final String icon;
   final String title;
-  final String route;
-  final Widget screen;
+  final RouteData route;
 
   MenuItem({
     required this.icon,
     required this.title,
     required this.route,
-    required this.screen,
   });
 }
 
 final List<MenuItem> sideBarMenuItems = [
   MenuItem(
-    icon: 'assets/icons/dashboard.svg',
+    icon: '/icons/dashboard.svg',
     title: 'Trang chủ',
-    route: DashboardScreen.routeName,
-    screen: const DashboardScreen(),
+    route: RouteData.dashboard,
   ),
   MenuItem(
-    icon: 'assets/icons/user.svg',
+    icon: '/icons/user.svg',
     title: 'Người dùng',
-    route: UserScreen.routeName,
-    screen: const UserScreen(),
+    route: RouteData.user,
   ),
   MenuItem(
-    icon: 'assets/icons/movie.svg',
+    icon: '/icons/movie.svg',
     title: 'Phim',
-    route: MovieScreen.routeName,
-    screen: const MovieScreen(),
+    route: RouteData.movie,
   ),
   MenuItem(
-    icon: 'assets/icons/genre.svg',
+    icon: '/icons/genre.svg',
     title: 'Thể loại',
-    route: GenreScreen.routeName,
-    screen: const GenreScreen(),
+    route: RouteData.genre,
   ),
   MenuItem(
-    icon: 'assets/icons/branch.svg',
+    icon: '/icons/branch.svg',
     title: 'Chi nhánh',
-    route: BranchScreen.routeName,
-    screen: const BranchScreen(),
+    route: RouteData.branch,
   ),
   MenuItem(
-    icon: 'assets/icons/showtime.svg',
+    icon: '/icons/showtime.svg',
     title: 'Lịch chiếu',
-    route: ShowtimeScreen.routeName,
-    screen: const ShowtimeScreen(),
+    route: RouteData.showtime,
   ),
   MenuItem(
-    icon: 'assets/icons/clipboard.svg',
-    title: 'Đơn hàng',
-    route: OrderScreen.routeName,
-    screen: const OrderScreen(),
+    icon: '/icons/ticket.svg',
+    title: 'Vé phim',
+    route: RouteData.ticket,
   ),
   MenuItem(
-    icon: 'assets/icons/trophy.svg',
+    icon: '/icons/trophy.svg',
     title: 'Khuyến mãi',
-    route: PromotionScreen.routeName,
-    screen: const PromotionScreen(),
+    route: RouteData.promotion,
   ),
   MenuItem(
     icon: 'assets/icons/advertisement.svg',
     title: 'Quảng cáo',
-    route: AdvertisementScreen.routeName,
-    screen: const AdvertisementScreen(),
+    route: RouteData.advertisement,
   ),
   MenuItem(
-    icon: 'assets/icons/pie-chart.svg',
+    icon: '/icons/pie-chart.svg',
     title: 'Thống kê',
-    route: StatisticScreen.routeName,
-    screen: const StatisticScreen(),
+    route: RouteData.statistic,
   ),
 ];

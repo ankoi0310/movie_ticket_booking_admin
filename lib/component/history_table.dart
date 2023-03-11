@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/config/responsive.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/config/size_config.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/data.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/constant/data.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/style/colors.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/style/style.dart';
 

@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/component/activity.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/component/app_bar_action_items.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/config/responsive.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/config/size_config.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/layout/component/header.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/layout/component/side_bar_menu.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/style/colors.dart';
 
 class DefaultLayout extends StatefulWidget {
-  const DefaultLayout({Key? key, required this.title, required this.child}) : super(key: key);
+  const DefaultLayout({Key? key, required this.routeName}) : super(key: key);
 
-  final String title;
-  final Widget child;
+  final String routeName;
 
   @override
   State<DefaultLayout> createState() => _DefaultLayoutState();
@@ -22,7 +19,6 @@ class _DefaultLayoutState extends State<DefaultLayout> {
 
   @override
   Widget build(BuildContext context) {
-    SizeConfig().init(context);
     return Scaffold(
       key: _drawerKey,
       drawer: !Responsive.isDesktop(context) ? const SizedBox(width: 100, child: SideBarMenu()) : null,
@@ -59,12 +55,12 @@ class _DefaultLayoutState extends State<DefaultLayout> {
                       children: [
                         Flexible(
                           flex: 1,
-                          child: Header(title: widget.title),
+                          child: Header(title: RouteHandler().getRouteTitle(widget.routeName)),
                         ),
                         SizedBox(height: SizeConfig.blockSizeVertical * 4),
                         Flexible(
                           flex: 9,
-                          child: widget.child,
+                          child: RouteHandler().getRouteWidget(widget.routeName),
                         ),
                       ],
                     ),

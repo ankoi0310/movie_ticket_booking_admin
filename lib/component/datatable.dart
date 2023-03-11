@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 
-class Datatable extends StatefulWidget {
-  const Datatable({Key? key}) : super(key: key);
+class Datatable extends StatelessWidget {
+  const Datatable({Key? key, required this.dataTableSource}) : super(key: key);
 
-  @override
-  State<Datatable> createState() => _DatatableState();
-}
+  final DataTableSource dataTableSource;
 
-class _DatatableState extends State<Datatable> {
   @override
   Widget build(BuildContext context) {
     return const Placeholder();

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class UserScreen extends StatefulWidget {
   static const routeName = '/user';
+
   const UserScreen({Key? key}) : super(key: key);
 
   @override

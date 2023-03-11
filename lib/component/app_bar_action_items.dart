@@ -13,15 +13,13 @@ class AppBarActionItems extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         IconButton(
-            icon: SvgPicture.asset(
-              'icons/calendar.svg',
-              width: 20,
-            ),
-            onPressed: () {}),
-        SizedBox(width: 10),
+          icon: SvgPicture.asset('icons/calendar.svg', width: 20),
+          onPressed: () {},
+        ),
+        const SizedBox(width: 10),
         IconButton(icon: SvgPicture.asset('icons/ring.svg', width: 20.0), onPressed: () {}),
-        SizedBox(width: 15),
-        Row(children: [
+        const SizedBox(width: 15),
+        const Row(children: [
           CircleAvatar(
             radius: 17,
             backgroundImage: NetworkImage(

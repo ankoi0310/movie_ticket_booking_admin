@@ -4,6 +4,7 @@ import 'package:movie_ticket_booking_admin_flutter_nlu/style/colors.dart';
 
 class BranchScreen extends StatefulWidget {
   static const routeName = '/branch';
+
   const BranchScreen({Key? key}) : super(key: key);
 
   @override

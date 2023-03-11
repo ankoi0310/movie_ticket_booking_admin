@@ -10,7 +10,7 @@ class GenreService {
     return await genreProvider.getGenres();
   }
 
-  Future<Genre?> getGenreById(int id) async {
+  Future<Genre?> getGenreById(String id) async {
     return await genreProvider.getGenreById(id);
   }
 

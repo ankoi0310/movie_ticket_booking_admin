@@ -17,8 +17,6 @@ class RecentListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int ticketAmount = 2;
-
     return ListTile(
       contentPadding: const EdgeInsets.only(left: 0, right: 20),
       visualDensity: VisualDensity.standard,

@@ -10,7 +10,12 @@ class InfoCard extends StatelessWidget {
   final String label;
   final String amount;
 
-  InfoCard({required this.icon, required this.label, required this.amount});
+  const InfoCard({
+    Key? key,
+    required this.icon,
+    required this.label,
+    required this.amount,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

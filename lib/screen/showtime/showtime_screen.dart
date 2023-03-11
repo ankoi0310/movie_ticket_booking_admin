@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class ShowtimeScreen extends StatefulWidget {
   static const routeName = '/showtime';
+
   const ShowtimeScreen({Key? key}) : super(key: key);
 
   @override

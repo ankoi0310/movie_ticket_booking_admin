@@ -1,14 +1,10 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/config/size_config.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/layout/component/side_bar_tile.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/model/menu_icon.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/style/colors.dart';
 
 class SideBarMenu extends StatelessWidget {
-  const SideBarMenu({
-    Key? key,
-  }) : super(key: key);
+  const SideBarMenu({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +20,7 @@ class SideBarMenu extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               InkWell(
-                onTap: () {
-                  context.router.pushNamed('/');
-                },
+                onTap: () {},
                 child: Container(
                   alignment: Alignment.topCenter,
                   width: double.infinity,
@@ -45,7 +39,7 @@ class SideBarMenu extends StatelessWidget {
                   icon: sideBarMenuItems[index].icon,
                   title: sideBarMenuItems[index].title,
                   press: () {
-                    context.router.pushNamed(sideBarMenuItems[index].routeName);
+                    AppRouterDelegate().setPathName(sideBarMenuItems[index].route.name);
                   },
                 ),
               ),

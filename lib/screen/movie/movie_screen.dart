@@ -4,6 +4,7 @@ import 'package:movie_ticket_booking_admin_flutter_nlu/config/size_config.dart';
 
 class MovieScreen extends StatefulWidget {
   static const routeName = '/movie';
+
   const MovieScreen({Key? key}) : super(key: key);
 
   @override
@@ -68,7 +69,7 @@ class _MovieScreenState extends State<MovieScreen> {
               ),
             ),
           ),
-        )
+        ),
       ],
     );
   }

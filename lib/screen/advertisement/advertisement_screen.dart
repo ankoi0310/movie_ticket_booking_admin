@@ -4,6 +4,7 @@ import 'package:movie_ticket_booking_admin_flutter_nlu/style/colors.dart';
 
 class AdvertisementScreen extends StatefulWidget {
   static const routeName = '/advertisement';
+
   const AdvertisementScreen({Key? key}) : super(key: key);
 
   @override
