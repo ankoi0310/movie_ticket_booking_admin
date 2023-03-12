@@ -1,9 +1,8 @@
-// Config
+export 'package:intl/intl.dart';
+
 export 'config/responsive.dart';
 export 'config/size_config.dart';
-// Layout
-export 'layout/default_layout.dart';
-// Providers
+export 'layout/default/default_layout.dart';
 export 'provider/advertisement_provider.dart';
 export 'provider/branch_provider.dart';
 export 'provider/genre_provider.dart';
@@ -13,7 +12,6 @@ export 'provider/showtime_provider.dart';
 export 'provider/statistic_provider.dart';
 export 'provider/ticket_provider.dart';
 export 'provider/user_provider.dart';
-// Routes
 export 'routes/custom_navigation_key.dart';
 export 'routes/custom_transition_delegate.dart';
 export 'routes/route_delegate.dart';
@@ -22,20 +20,18 @@ export 'routes/route_information_parser.dart';
 export 'routes/route_path.dart';
 export 'routes/split_route_param.dart';
 export 'screen/advertisement/advertisement_screen.dart';
+export 'screen/auth/forgot_password/forgot_password_screen.dart';
+export 'screen/auth/login/login_screen.dart';
 export 'screen/branch/branch_screen.dart';
 export 'screen/dashboard/dashboard_screen.dart';
-export 'screen/error/unknown_screen.dart';
+export 'screen/error/not_found_screen.dart';
 export 'screen/genre/genre_screen.dart';
-// Screens
-export 'screen/login/login_screen.dart';
 export 'screen/movie/movie_screen.dart';
 export 'screen/promotion/promotion_screen.dart';
 export 'screen/showtime/showtime_screen.dart';
 export 'screen/statistic/statistic_screen.dart';
 export 'screen/ticket/ticket_screen.dart';
 export 'screen/user/user_screen.dart';
-// Style
 export 'style/colors.dart';
 export 'style/style.dart';
-// Utils
 export 'util/app_util.dart';
