@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/app.dart';
 import 'package:provider/provider.dart';
@@ -6,8 +7,8 @@ import 'package:provider/provider.dart';
 import 'core.dart';
 
 void main() {
-  // usePathUrlStrategy();
-  // WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
+  usePathUrlStrategy();
   initializeDateFormatting().then(
     (_) => runApp(
       MultiProvider(

@@ -1,8 +1,20 @@
+export 'package:data_table_2/data_table_2.dart';
 export 'package:intl/intl.dart';
+export 'package:provider/provider.dart';
 
+export 'config/datatable_config.dart';
 export 'config/responsive.dart';
 export 'config/size_config.dart';
 export 'layout/default/default_layout.dart';
+// export 'model/advertisement.dart';
+export 'model/branch.dart';
+// export 'model/cinema.dart';
+export 'model/genre.dart';
+export 'model/movie.dart';
+// export 'model/promotion.dart';
+// export 'model/showtime.dart';
+export 'model/ticket.dart';
+export 'model/user.dart';
 export 'provider/advertisement_provider.dart';
 export 'provider/branch_provider.dart';
 export 'provider/genre_provider.dart';
