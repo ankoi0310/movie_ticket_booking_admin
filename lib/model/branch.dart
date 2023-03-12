@@ -1,13 +1,18 @@
 class Branch {
-  final String _id;
-  final String name;
-  final String url;
+  String _id;
+  String name;
+  String address;
 
   Branch({
     required String id,
     required this.name,
-    required this.url,
+    required this.address,
   }) : _id = id;
+
+  Branch.withoutId({
+    required this.name,
+    required this.address,
+  }) : _id = '';
 
   String get id => _id;
 
@@ -15,7 +20,7 @@ class Branch {
     return Branch(
       id: json['_id'],
       name: json['name'],
-      url: json['url'],
+      address: json['address'],
     );
   }
 
@@ -23,7 +28,7 @@ class Branch {
     return {
       '_id': _id,
       'name': name,
-      'url': url,
+      'address': address,
     };
   }
 }

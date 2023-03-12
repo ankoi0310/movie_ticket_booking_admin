@@ -32,7 +32,7 @@ class BranchProvider with ChangeNotifier {
 
   Future<Branch?> getBranchById(int id) async {
     try {
-      final response = await http.get(Uri.parse('http://localhost:3000/api/branches/$id'));
+      final response = await http.get(Uri.parse('http://localhost:3000/api/branch/$id'));
 
       Map jsonResponse = jsonDecode(response.body);
 
@@ -46,15 +46,16 @@ class BranchProvider with ChangeNotifier {
     }
   }
 
-  Future<Branch?> createBranch({required String name}) async {
+  Future<Branch?> createBranch({required String name, required String address}) async {
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:3000/api/branches'),
-        headers: <String, String>{
+        Uri.parse('http://localhost:3000/api/branch'),
+        headers: {
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode(<String, String>{
+        body: jsonEncode({
           'name': name,
+          'address': address,
         }),
       );
 
@@ -70,15 +71,15 @@ class BranchProvider with ChangeNotifier {
     }
   }
 
-  Future<Branch?> updateBranch({required int id, required String name}) async {
+  Future<Branch?> updateBranch(Branch branch) async {
     try {
       final response = await http.put(
-        Uri.parse('http://localhost:3000/api/branches/$id'),
-        headers: <String, String>{
+        Uri.parse('http://localhost:3000/api/branch/${branch.id}'),
+        headers: {
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode(<String, String>{
-          'name': name,
+        body: jsonEncode({
+          'name': branch.name,
         }),
       );
 
@@ -96,7 +97,7 @@ class BranchProvider with ChangeNotifier {
 
   Future<void> deleteBranch(String id) async {
     try {
-      final response = await http.delete(Uri.parse('http://localhost:3000/api/branches/$id'));
+      final response = await http.delete(Uri.parse('http://localhost:3000/api/branch/$id'));
 
       if (response.statusCode == 200) {
         _branches.removeWhere((element) => element.id == id);
