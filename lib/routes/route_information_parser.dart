@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/routes/route_path.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 
 class RoutesInformationParser extends RouteInformationParser<RoutePath> {
   @override

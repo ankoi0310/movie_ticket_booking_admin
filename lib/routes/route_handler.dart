@@ -3,7 +3,6 @@ import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 
 enum RouteData {
   login,
-  unknown,
   notFound,
   dashboard,
   user,
@@ -41,8 +40,8 @@ class RouteHandler {
           switch (routeData) {
             case RouteData.login:
               return const LoginScreen();
-            case RouteData.unknown:
-              return const UnknownScreen();
+            case RouteData.notFound:
+              return const NotFoundScreen();
             case RouteData.dashboard:
               return const DashboardScreen();
             case RouteData.user:
@@ -67,13 +66,13 @@ class RouteHandler {
               return const DashboardScreen();
           }
         } else {
-          return const UnknownScreen();
+          return const NotFoundScreen();
         }
       } else {
         return const DashboardScreen();
       }
     } else {
-      return const UnknownScreen();
+      return const NotFoundScreen();
     }
   }
 
@@ -93,8 +92,8 @@ class RouteHandler {
           switch (routeData) {
             case RouteData.login:
               return 'Login';
-            case RouteData.unknown:
-              return 'Unknown';
+            case RouteData.notFound:
+              return 'Not Found';
             case RouteData.dashboard:
               return 'Dashboard';
             case RouteData.user:
@@ -119,13 +118,13 @@ class RouteHandler {
               return 'Dashboard';
           }
         } else {
-          return 'Unknown';
+          return 'Not Found';
         }
       } else {
         return 'Dashboard';
       }
     } else {
-      return 'Unknown';
+      return 'Not Found';
     }
   }
 }

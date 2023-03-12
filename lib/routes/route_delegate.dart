@@ -49,10 +49,10 @@ class AppRouterDelegate extends RouterDelegate<RoutePath> with ChangeNotifier, P
       ];
 
   /// UnKnown Stack
-  List<Page> get _unknownStack => [
+  List<Page> get _notFoundStack => [
         const MaterialPage(
-          key: ValueKey('unknown'),
-          child: UnknownScreen(),
+          key: ValueKey('notFound'),
+          child: NotFoundScreen(),
         )
       ];
 
@@ -63,7 +63,7 @@ class AppRouterDelegate extends RouterDelegate<RoutePath> with ChangeNotifier, P
     } else if (isLoggedIn == false) {
       _stack = _authStack;
     } else {
-      _stack = _unknownStack;
+      _stack = _notFoundStack;
     }
 
     return Navigator(
