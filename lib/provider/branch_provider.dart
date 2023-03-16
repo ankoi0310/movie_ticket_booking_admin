@@ -46,7 +46,7 @@ class BranchProvider with ChangeNotifier {
     }
   }
 
-  Future<Branch?> createBranch({required String name, required String address}) async {
+  Future<Branch?> createBranch(Branch branch) async {
     try {
       final response = await http.post(
         Uri.parse('http://localhost:3000/api/branch'),
@@ -54,8 +54,8 @@ class BranchProvider with ChangeNotifier {
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode({
-          'name': name,
-          'address': address,
+          'name': branch.name,
+          'address': branch.address,
         }),
       );
 

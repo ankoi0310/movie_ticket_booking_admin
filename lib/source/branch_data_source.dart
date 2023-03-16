@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/branch/component/branch_form.dart';
 
 class BranchDataTableSource extends DataTableSource {
   BranchDataTableSource({required this.context, required this.provider});
@@ -14,7 +15,7 @@ class BranchDataTableSource extends DataTableSource {
     return DataRow2.byIndex(
       index: index,
       cells: <DataCell>[
-        DataCell(Text(branch.id)),
+        DataCell(Text(branch.id!)),
         DataCell(Text(branch.name)),
         DataCell(Text(branch.address)),
         DataCell(
@@ -34,22 +35,9 @@ class BranchDataTableSource extends DataTableSource {
                         title: const Text('Chỉnh sửa chi nhánh'),
                         content: Container(
                           padding: const EdgeInsets.all(8),
-                          child: Form(
-                            key: formKey,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                TextFormField(
-                                  initialValue: branch.name,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Tên thể loại',
-                                  ),
-                                  onSaved: (value) {
-                                    branch.name = value!;
-                                  },
-                                ),
-                              ],
-                            ),
+                          child: BranchForm(
+                            formKey: formKey,
+                            branch: branch,
                           ),
                         ),
                         actions: [
@@ -94,7 +82,7 @@ class BranchDataTableSource extends DataTableSource {
                           ElevatedButton(
                             child: const Text('Xoá'),
                             onPressed: () {
-                              provider.deleteBranch(branch.id).then((value) async => {
+                              provider.deleteBranch(branch.id!).then((value) async => {
                                     Navigator.of(context).pop(),
                                   });
                             },

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/screen/branch/component/add_branch_form.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/branch/component/branch_form.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/source/branch_data_source.dart';
 
 class BranchScreen extends StatefulWidget {
@@ -12,8 +12,6 @@ class BranchScreen extends StatefulWidget {
 
 class _BranchScreenState extends State<BranchScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _addressController = TextEditingController();
   int currentPageIndex = 0;
 
   @override
@@ -32,38 +30,35 @@ class _BranchScreenState extends State<BranchScreen> {
                   ElevatedButton(
                     child: const Text('Thêm chi nhánh'),
                     onPressed: () {
-                      if (Responsive.isDesktop(context)) {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text('Thêm chi nhánh'),
-                            content: Container(
-                              padding: const EdgeInsets.all(8),
-                              child: AddBranchForm(
-                                formKey: _formKey,
-                                nameController: _nameController,
-                                addressController: _addressController,
-                              ),
+                      Branch newBranch = Branch.empty();
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Thêm chi nhánh'),
+                          content: Container(
+                            padding: const EdgeInsets.all(8),
+                            child: BranchForm(
+                              formKey: _formKey,
+                              branch: newBranch,
                             ),
-                            actions: [
-                              TextButton(
-                                child: const Text('Hủy'),
-                                onPressed: () => Navigator.of(context).pop(),
-                              ),
-                              TextButton(
-                                child: const Text('Thêm'),
-                                onPressed: () {
-                                  if (_formKey.currentState!.validate()) {
-                                    branchProvider
-                                        .createBranch(name: _nameController.text, address: _addressController.text)
-                                        .then((value) => Navigator.of(context).pop());
-                                  }
-                                },
-                              ),
-                            ],
                           ),
-                        );
-                      }
+                          actions: [
+                            TextButton(
+                              child: const Text('Hủy'),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                            TextButton(
+                              child: const Text('Thêm'),
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  _formKey.currentState!.save();
+                                  branchProvider.createBranch(newBranch).then((value) => Navigator.of(context).pop());
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      );
                     },
                   ),
                 ],

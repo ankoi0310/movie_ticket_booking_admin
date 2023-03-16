@@ -1,25 +1,17 @@
 class Branch {
-  String _id;
+  String? id;
   String name;
   String address;
 
   Branch({
-    required String id,
+    required this.id,
     required this.name,
     required this.address,
-  }) : _id = id;
-
-  Branch.withoutId({
-    required this.name,
-    required this.address,
-  }) : _id = '';
+  });
 
   Branch.empty()
-      : _id = '',
-        name = '',
+      : name = '',
         address = '';
-
-  String get id => _id;
 
   factory Branch.fromJson(Map<String, dynamic> json) {
     return Branch(
@@ -31,7 +23,7 @@ class Branch {
 
   Map<String, dynamic> toJson() {
     return {
-      '_id': _id,
+      '_id': id,
       'name': name,
       'address': address,
     };
