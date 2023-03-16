@@ -1,35 +1,25 @@
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 
 class Movie {
-  String _id;
+  String? id;
   String name;
   String description;
   String image;
   List<Genre> genres;
 
   Movie({
-    required String id,
+    this.id,
     required this.name,
     required this.description,
     required this.image,
     required this.genres,
-  }) : _id = id;
-
-  Movie.withoutId({
-    required this.name,
-    required this.description,
-    required this.image,
-    required this.genres,
-  }) : _id = '';
+  });
 
   Movie.empty()
-      : _id = '',
-        name = '',
+      : name = '',
         description = '',
         image = '',
         genres = [];
-
-  String get id => _id;
 
   factory Movie.fromJson(Map<String, dynamic> json) {
     return Movie(
@@ -43,7 +33,7 @@ class Movie {
 
   Map<String, dynamic> toJson() {
     return {
-      '_id': _id,
+      '_id': id,
       'name': name,
       'description': description,
       'image': image,

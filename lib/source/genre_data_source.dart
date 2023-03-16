@@ -15,7 +15,6 @@ class GenreDataTableSource extends DataTableSource {
     return DataRow2.byIndex(
       index: index,
       cells: <DataCell>[
-        DataCell(Text(genre.id!)),
         DataCell(Text(genre.name)),
         DataCell(
           Row(

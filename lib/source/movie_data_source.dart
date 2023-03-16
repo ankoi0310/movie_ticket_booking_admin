@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/movie/component/movie_form.dart';
 
 class MovieDataTableSource extends DataTableSource {
   MovieDataTableSource({required this.context, required this.provider});
@@ -45,22 +46,9 @@ class MovieDataTableSource extends DataTableSource {
                         title: const Text('Chỉnh sửa phim'),
                         content: Container(
                           padding: const EdgeInsets.all(8),
-                          child: Form(
-                            key: formKey,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                TextFormField(
-                                  initialValue: movie.name,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Tên phim',
-                                  ),
-                                  onSaved: (value) {
-                                    movie.name = value!;
-                                  },
-                                ),
-                              ],
-                            ),
+                          child: MovieForm(
+                            formKey: formKey,
+                            movie: movie,
                           ),
                         ),
                         actions: [
@@ -107,7 +95,7 @@ class MovieDataTableSource extends DataTableSource {
                           ElevatedButton(
                             child: const Text('Xoá'),
                             onPressed: () {
-                              provider.deleteMovie(movie.id).then((value) async => {
+                              provider.deleteMovie(movie.id!).then((value) async => {
                                     Navigator.of(context).pop(),
                                   });
                             },

@@ -15,7 +15,6 @@ class BranchDataTableSource extends DataTableSource {
     return DataRow2.byIndex(
       index: index,
       cells: <DataCell>[
-        DataCell(Text(branch.id!)),
         DataCell(Text(branch.name)),
         DataCell(Text(branch.address)),
         DataCell(

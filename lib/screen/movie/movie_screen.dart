@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/screen/movie/component/add_movie_form.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/movie/component/movie_form.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/source/movie_data_source.dart';
 
 class MovieScreen extends StatefulWidget {
@@ -16,7 +16,6 @@ class _MovieScreenState extends State<MovieScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Movie movie = Movie.empty();
     final movieProvider = Provider.of<MovieProvider>(context);
 
     return FutureBuilder(
@@ -31,35 +30,34 @@ class _MovieScreenState extends State<MovieScreen> {
                   ElevatedButton(
                     child: const Text('Thêm phim'),
                     onPressed: () {
-                      if (Responsive.isDesktop(context)) {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text('Thêm phim'),
-                            content: Container(
-                              padding: const EdgeInsets.all(8),
-                              child: AddMovieForm(
-                                formKey: _formKey,
-                                movie: movie,
-                              ),
+                      Movie movie = Movie.empty();
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Thêm phim'),
+                          content: Container(
+                            padding: const EdgeInsets.all(8),
+                            child: MovieForm(
+                              formKey: _formKey,
+                              movie: movie,
                             ),
-                            actions: [
-                              TextButton(
-                                child: const Text('Hủy'),
-                                onPressed: () => Navigator.of(context).pop(),
-                              ),
-                              TextButton(
-                                child: const Text('Thêm'),
-                                onPressed: () {
-                                  if (_formKey.currentState!.validate()) {
-                                    movieProvider.createMovie(movie).then((value) => Navigator.of(context).pop());
-                                  }
-                                },
-                              ),
-                            ],
                           ),
-                        );
-                      }
+                          actions: [
+                            TextButton(
+                              child: const Text('Hủy'),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                            TextButton(
+                              child: const Text('Thêm'),
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  movieProvider.createMovie(movie).then((value) => Navigator.of(context).pop());
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      );
                     },
                   ),
                 ],

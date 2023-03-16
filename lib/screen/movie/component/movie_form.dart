@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 
-class AddMovieForm extends StatelessWidget {
-  const AddMovieForm({
+class MovieForm extends StatelessWidget {
+  const MovieForm({
     super.key,
     required this.formKey,
     required this.movie,
@@ -23,6 +23,15 @@ class AddMovieForm extends StatelessWidget {
             decoration: const InputDecoration(
               labelText: 'Tên phim',
             ),
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Tên phim không được để trống';
+              }
+              return null;
+            },
+            onSaved: (value) {
+              movie.name = value!;
+            },
           ),
         ],
       ),
