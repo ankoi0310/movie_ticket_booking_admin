@@ -48,7 +48,7 @@ class GenreProvider extends ChangeNotifier {
     }
   }
 
-  Future<Genre?> createGenre({required String name}) async {
+  Future<Genre?> createGenre(Genre genre) async {
     try {
       final response = await http.post(
         Uri.parse('http://localhost:3000/api/genre'),
@@ -56,7 +56,7 @@ class GenreProvider extends ChangeNotifier {
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode({
-          'name': name,
+          'name': genre.name,
         }),
       );
 

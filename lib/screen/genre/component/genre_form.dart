@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 
-class AddGenreForm extends StatelessWidget {
-  const AddGenreForm({
+class GenreForm extends StatelessWidget {
+  const GenreForm({
     super.key,
     required this.formKey,
-    required this.nameController,
+    required this.genre,
   });
 
   final GlobalKey<FormState> formKey;
-  final TextEditingController nameController;
+  final Genre genre;
 
   @override
   Widget build(BuildContext context) {
@@ -18,10 +19,13 @@ class AddGenreForm extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextFormField(
-            controller: nameController,
+            initialValue: genre.name,
             decoration: const InputDecoration(
               labelText: 'Tên thể loại',
             ),
+            onSaved: (value) {
+              genre.name = value!;
+            },
           ),
         ],
       ),

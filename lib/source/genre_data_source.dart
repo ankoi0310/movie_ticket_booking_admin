@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/screen/genre/component/update_genre_form.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/genre/component/genre_form.dart';
 
 class GenreDataTableSource extends DataTableSource {
   GenreDataTableSource({required this.context, required this.provider});
@@ -15,7 +15,7 @@ class GenreDataTableSource extends DataTableSource {
     return DataRow2.byIndex(
       index: index,
       cells: <DataCell>[
-        DataCell(Text(genre.id)),
+        DataCell(Text(genre.id!)),
         DataCell(Text(genre.name)),
         DataCell(
           Row(
@@ -34,7 +34,7 @@ class GenreDataTableSource extends DataTableSource {
                         title: const Text('Chỉnh sửa thể loại'),
                         content: Container(
                           padding: const EdgeInsets.all(8),
-                          child: UpdateGenreForm(
+                          child: GenreForm(
                             formKey: formKey,
                             genre: genre,
                           ),
@@ -76,7 +76,7 @@ class GenreDataTableSource extends DataTableSource {
                           ElevatedButton(
                             child: const Text('Xoá'),
                             onPressed: () {
-                              provider.deleteGenre(genre.id).then((value) async => Navigator.of(context).pop());
+                              provider.deleteGenre(genre.id!).then((value) async => Navigator.of(context).pop());
                             },
                           ),
                         ],

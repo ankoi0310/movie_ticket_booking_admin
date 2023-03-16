@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/screen/genre/component/add_genre_form.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/genre/component/genre_form.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/source/genre_data_source.dart';
 
 class GenreScreen extends StatefulWidget {
@@ -12,7 +12,6 @@ class GenreScreen extends StatefulWidget {
 
 class _GenreScreenState extends State<GenreScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
   int currentPageIndex = 0;
 
   @override
@@ -31,35 +30,34 @@ class _GenreScreenState extends State<GenreScreen> {
                   ElevatedButton(
                     child: const Text('Thêm thể loại'),
                     onPressed: () {
-                      if (Responsive.isDesktop(context)) {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text('Thêm thể loại'),
-                            content: Container(
-                              padding: const EdgeInsets.all(8),
-                              child: AddGenreForm(
-                                formKey: _formKey,
-                                nameController: _nameController,
-                              ),
+                      Genre newGenre = Genre.empty();
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Thêm thể loại'),
+                          content: Container(
+                            padding: const EdgeInsets.all(8),
+                            child: GenreForm(
+                              formKey: _formKey,
+                              genre: newGenre,
                             ),
-                            actions: [
-                              TextButton(
-                                child: const Text('Hủy'),
-                                onPressed: () => Navigator.of(context).pop(),
-                              ),
-                              TextButton(
-                                child: const Text('Thêm'),
-                                onPressed: () {
-                                  if (_formKey.currentState!.validate()) {
-                                    genreProvider.createGenre(name: _nameController.text).then((value) => Navigator.of(context).pop());
-                                  }
-                                },
-                              ),
-                            ],
                           ),
-                        );
-                      }
+                          actions: [
+                            TextButton(
+                              child: const Text('Hủy'),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                            TextButton(
+                              child: const Text('Thêm'),
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  genreProvider.createGenre(newGenre).then((value) => Navigator.of(context).pop());
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      );
                     },
                   ),
                 ],
