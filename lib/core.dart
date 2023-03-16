@@ -2,6 +2,7 @@ export 'package:data_table_2/data_table_2.dart';
 export 'package:dropdown_button2/dropdown_button2.dart';
 export 'package:intl/intl.dart';
 export 'package:provider/provider.dart';
+export 'package:readmore/readmore.dart';
 
 export 'config/datatable_config.dart';
 export 'config/dropdown_button_config.dart';

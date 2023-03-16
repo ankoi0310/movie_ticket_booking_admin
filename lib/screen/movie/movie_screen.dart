@@ -1,10 +1,9 @@
-import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/config/size_config.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/movie/component/add_movie_form.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/source/movie_data_source.dart';
 
 class MovieScreen extends StatefulWidget {
-  static const routeName = '/movie';
-
   const MovieScreen({Key? key}) : super(key: key);
 
   @override
@@ -12,65 +11,101 @@ class MovieScreen extends StatefulWidget {
 }
 
 class _MovieScreenState extends State<MovieScreen> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  int currentPageIndex = 0;
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          child: Row(
-            children: [
-              ElevatedButton(
-                onPressed: () {},
-                child: const Text('Add'),
-              ),
-              const SizedBox(
-                width: 8,
-              ),
-              ElevatedButton(
-                onPressed: () {},
-                child: const Text('Edit'),
-              ),
-              const SizedBox(
-                width: 8,
-              ),
-              ElevatedButton(
-                onPressed: () {},
-                child: const Text('Delete'),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(
-          height: SizeConfig.screenHeight * 0.7,
-          child: DataTable2(
-            columnSpacing: 12,
-            horizontalMargin: 12,
-            columns: [
-              DataColumn2(
-                label: Text('Name'),
-                size: ColumnSize.L,
-              ),
-              DataColumn(
-                label: Text('Age'),
-              ),
-              DataColumn(
-                label: Text('Role'),
-              ),
-            ],
-            rows: List<DataRow>.generate(
-              8,
-              (index) => DataRow(
-                cells: [
-                  DataCell(Text('John')),
-                  DataCell(Text('19')),
-                  DataCell(Text('Student')),
+    Movie movie = Movie.empty();
+    final movieProvider = Provider.of<MovieProvider>(context);
+
+    return FutureBuilder(
+      future: movieProvider.getMovies(),
+      builder: (context, snapshot) {
+        return Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                children: [
+                  ElevatedButton(
+                    child: const Text('Thêm phim'),
+                    onPressed: () {
+                      if (Responsive.isDesktop(context)) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Thêm phim'),
+                            content: Container(
+                              padding: const EdgeInsets.all(8),
+                              child: AddMovieForm(
+                                formKey: _formKey,
+                                movie: movie,
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                child: const Text('Hủy'),
+                                onPressed: () => Navigator.of(context).pop(),
+                              ),
+                              TextButton(
+                                child: const Text('Thêm'),
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    movieProvider.createMovie(movie).then((value) => Navigator.of(context).pop());
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    },
+                  ),
                 ],
               ),
             ),
-          ),
-        ),
-      ],
+            SizedBox(
+              width: SizeConfig.screenWidth,
+              height: SizeConfig.screenHeight * 0.7,
+              child: PaginatedDataTable2(
+                empty: const Center(child: Text('Không có dữ liệu')),
+                border: TableBorder.all(color: Colors.grey, width: 1),
+                rowsPerPage: DatatableConfig.defaultRowsPerPage,
+                fit: FlexFit.tight,
+                onPageChanged: (index) {
+                  setState(() {
+                    currentPageIndex = index;
+                  });
+                },
+                source: MovieDataTableSource(context: context, provider: movieProvider),
+                columns: const [
+                  DataColumn2(
+                    label: Center(child: Text('Tên phim')),
+                    size: ColumnSize.L,
+                  ),
+                  DataColumn2(
+                    label: Center(child: Text('Mô tả')),
+                    size: ColumnSize.L,
+                  ),
+                  DataColumn2(
+                    label: Center(child: Text('Ảnh nền')),
+                    size: ColumnSize.S,
+                  ),
+                  DataColumn2(
+                    label: Center(child: Text('Thể loại')),
+                    size: ColumnSize.S,
+                  ),
+                  DataColumn2(
+                    label: Center(child: Text('')),
+                    size: ColumnSize.S,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

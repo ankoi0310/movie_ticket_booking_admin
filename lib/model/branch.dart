@@ -14,6 +14,11 @@ class Branch {
     required this.address,
   }) : _id = '';
 
+  Branch.empty()
+      : _id = '',
+        name = '',
+        address = '';
+
   String get id => _id;
 
   factory Branch.fromJson(Map<String, dynamic> json) {
