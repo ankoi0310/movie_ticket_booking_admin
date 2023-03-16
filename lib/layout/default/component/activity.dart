@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/config/size_config.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/constant/data.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/layout/component/movie_ticket_status.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/layout/component/recent_list_tile.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/style/colors.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/style/style.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
+
+import 'movie_ticket_status.dart';
+import 'recent_list_tile.dart';
 
 class Activity extends StatefulWidget {
   const Activity({Key? key}) : super(key: key);

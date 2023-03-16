@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/component/activity.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/component/app_bar_action_items.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/layout/component/header.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/layout/component/side_bar_menu.dart';
+
+import 'component/activity.dart';
+import 'component/app_bar_action_items.dart';
+import 'component/header.dart';
+import 'component/side_bar_menu.dart';
 
 class DefaultLayout extends StatefulWidget {
   const DefaultLayout({Key? key, required this.routeName}) : super(key: key);
@@ -60,7 +61,16 @@ class _DefaultLayoutState extends State<DefaultLayout> {
                         SizedBox(height: SizeConfig.blockSizeVertical * 4),
                         Flexible(
                           flex: 9,
-                          child: RouteHandler().getRouteWidget(widget.routeName),
+                          child: FutureBuilder(
+                            future: RouteHandler().getRouteWidget(widget.routeName),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return snapshot.data as Widget;
+                              } else {
+                                return const Center(child: CircularProgressIndicator());
+                              }
+                            },
+                          ),
                         ),
                       ],
                     ),
