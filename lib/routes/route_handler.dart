@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/service/hive_storage_service.dart';
 
 enum RouteData {
   login,
@@ -9,6 +10,7 @@ enum RouteData {
   movie,
   genre,
   branch,
+  room,
   showtime,
   ticket,
   promotion,
@@ -26,7 +28,7 @@ class RouteHandler {
   /// Return [WidgetToRender, PathName]
   /// [WidgetToRender] - Render specific widget
   /// [PathName] - Redirect to [PathName] if invalid path is entered
-  Widget getRouteWidget(String? routeName) {
+  Future<Widget> getRouteWidget(String? routeName) async {
     RouteData routeData;
 
     if (routeName != null) {
@@ -37,33 +39,38 @@ class RouteHandler {
         routeData = RouteData.values.firstWhere((element) => element.name == pathName, orElse: () => RouteData.notFound);
 
         if (routeData != RouteData.notFound) {
-          switch (routeData) {
-            case RouteData.login:
-              return const LoginScreen();
-            case RouteData.notFound:
-              return const NotFoundScreen();
-            case RouteData.dashboard:
-              return const DashboardScreen();
-            case RouteData.user:
-              return const UserScreen();
-            case RouteData.movie:
-              return const MovieScreen();
-            case RouteData.genre:
-              return const GenreScreen();
-            case RouteData.branch:
-              return const BranchScreen();
-            case RouteData.showtime:
-              return const ShowtimeScreen();
-            case RouteData.ticket:
-              return const TicketScreen();
-            case RouteData.promotion:
-              return const PromotionScreen();
-            case RouteData.advertisement:
-              return const AdvertisementScreen();
-            case RouteData.statistic:
-              return const StatisticScreen();
-            default:
-              return const DashboardScreen();
+          bool isLoggedIn = await HiveDataStorageService.getUser();
+          if (isLoggedIn) {
+            switch (routeData) {
+              case RouteData.login:
+                return const LoginScreen();
+              case RouteData.dashboard:
+                return const DashboardScreen();
+              case RouteData.user:
+                return const UserScreen();
+              case RouteData.movie:
+                return const MovieScreen();
+              case RouteData.genre:
+                return const GenreScreen();
+              case RouteData.branch:
+                return const BranchScreen();
+              case RouteData.room:
+                return const RoomScreen();
+              case RouteData.showtime:
+                return const ShowtimeScreen();
+              case RouteData.ticket:
+                return const TicketScreen();
+              case RouteData.promotion:
+                return const PromotionScreen();
+              case RouteData.advertisement:
+                return const AdvertisementScreen();
+              case RouteData.statistic:
+                return const StatisticScreen();
+              default:
+                return const DashboardScreen();
+            }
+          } else {
+            return const LoginScreen();
           }
         } else {
           return const NotFoundScreen();
@@ -90,30 +97,28 @@ class RouteHandler {
 
         if (routeData != RouteData.notFound) {
           switch (routeData) {
-            case RouteData.login:
-              return 'Login';
-            case RouteData.notFound:
-              return 'Not Found';
             case RouteData.dashboard:
               return 'Dashboard';
             case RouteData.user:
-              return 'User';
+              return 'Người dùng';
             case RouteData.movie:
-              return 'Movie';
+              return 'Phim';
             case RouteData.genre:
-              return 'Genre';
+              return 'Thể loại';
             case RouteData.branch:
-              return 'Branch';
+              return 'Chi nhánh';
+            case RouteData.room:
+              return 'Phòng chiếu';
             case RouteData.showtime:
-              return 'Showtime';
+              return 'Lịch chiếu';
             case RouteData.ticket:
-              return 'Ticket';
+              return 'Vé phim';
             case RouteData.promotion:
-              return 'Promotion';
+              return 'Khuyến mãi';
             case RouteData.advertisement:
-              return 'Advertisement';
+              return 'Quảng cáo';
             case RouteData.statistic:
-              return 'Statistic';
+              return 'Thống kê';
             default:
               return 'Dashboard';
           }

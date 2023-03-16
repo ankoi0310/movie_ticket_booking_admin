@@ -20,9 +20,9 @@ class RoutesInformationParser extends RouteInformationParser<RoutePath> {
     } else if (uri.pathSegments.length == 2) {
       final complexPath = '${uri.pathSegments.elementAt(0)}/${uri.pathSegments.elementAt(1)}';
       return RoutePath.otherPage(complexPath);
+    } else {
+      return RoutePath.otherPage(uri.pathSegments.toString());
     }
-
-    return RoutePath.unkown();
   }
 
   @override

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/layout/full_width/full_width_layout.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/service/hive_storage_service.dart';
 
 class AppRouterDelegate extends RouterDelegate<RoutePath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<RoutePath> {
   static final AppRouterDelegate _instance = AppRouterDelegate._();
 
-  bool? isLoggedIn = true;
+  bool? isLoggedIn;
   String? pathName;
   bool isError = false;
 
@@ -42,9 +44,11 @@ class AppRouterDelegate extends RouterDelegate<RoutePath> with ChangeNotifier, P
 
   /// Auth route
   List<Page> get _authStack => [
-        const MaterialPage(
-          key: ValueKey('login'),
-          child: LoginScreen(),
+        MaterialPage(
+          key: const ValueKey('auth'),
+          child: FullWidthLayout(
+            routeName: RouteData.login.name,
+          ),
         ),
       ];
 
@@ -82,24 +86,33 @@ class AppRouterDelegate extends RouterDelegate<RoutePath> with ChangeNotifier, P
 
   @override
   Future<void> setNewRoutePath(RoutePath configuration) async {
-    if (configuration.isUnknown) {
-      pathName = null;
-      isError = true;
-      return;
-    }
+    bool isLoggedIn = await HiveDataStorageService.getUser();
+    pathName = configuration.pathName;
 
     if (configuration.isOtherPage) {
       if (configuration.pathName != null) {
+        if (isLoggedIn == true) {
+          /// If logged in
+          if (configuration.pathName == RouteData.login.name) {
+            pathName = RouteData.dashboard.name;
+            isError = false;
+          } else {
+            pathName = configuration.pathName != RouteData.login.name ? configuration.pathName : RouteData.dashboard.name;
+            isError = false;
+          }
+        } else {
+          pathName = RouteData.login.name;
+
+          isError = false;
+        }
+      } else {
         pathName = configuration.pathName;
         isError = false;
-        return;
-      } else {
-        isError = true;
-        return;
       }
     } else {
-      pathName = null;
+      pathName = "/";
     }
+    notifyListeners();
   }
 
   void setPathName(String path, {bool loggedIn = true}) {
