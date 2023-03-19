@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/screen/room/component/add_room_form.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/room/component/room_form.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/source/room_data_source.dart';
 
 class RoomScreen extends StatefulWidget {
@@ -12,9 +12,7 @@ class RoomScreen extends StatefulWidget {
 
 class _RoomScreenState extends State<RoomScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
   int currentPageIndex = 0;
-  Room newRoom = Room.empty();
 
   @override
   Widget build(BuildContext context) {
@@ -32,37 +30,36 @@ class _RoomScreenState extends State<RoomScreen> {
                   ElevatedButton(
                     child: const Text('Thêm phòng'),
                     onPressed: () {
-                      if (Responsive.isDesktop(context)) {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text('Thêm phòng'),
-                            content: Container(
-                              padding: const EdgeInsets.all(8),
-                              width: SizeConfig.screenWidth * 0.7,
-                              child: AddRoomForm(
-                                formKey: _formKey,
-                                entity: newRoom,
-                              ),
+                      Room newRoom = Room.empty();
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Thêm phòng'),
+                          content: Container(
+                            padding: const EdgeInsets.all(8),
+                            width: SizeConfig.screenWidth * 0.7,
+                            child: RoomForm(
+                              formKey: _formKey,
+                              room: newRoom,
                             ),
-                            actions: [
-                              TextButton(
-                                child: const Text('Hủy'),
-                                onPressed: () => Navigator.of(context).pop(),
-                              ),
-                              TextButton(
-                                child: const Text('Thêm'),
-                                onPressed: () {
-                                  if (_formKey.currentState!.validate()) {
-                                    newRoom.name = _nameController.text;
-                                    roomProvider.createRoom(newRoom).then((value) => Navigator.of(context).pop());
-                                  }
-                                },
-                              ),
-                            ],
                           ),
-                        );
-                      }
+                          actions: [
+                            TextButton(
+                              child: const Text('Hủy'),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                            TextButton(
+                              child: const Text('Thêm'),
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  _formKey.currentState!.save();
+                                  roomProvider.createRoom(newRoom).then((value) => Navigator.of(context).pop());
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      );
                     },
                   ),
                 ],

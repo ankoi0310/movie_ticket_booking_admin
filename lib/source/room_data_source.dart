@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/screen/room/component/update_room_form.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/room/component/room_form.dart';
 
 class RoomDataTableSource extends DataTableSource {
   RoomDataTableSource({required this.context, required this.provider});
@@ -34,7 +34,7 @@ class RoomDataTableSource extends DataTableSource {
                         title: const Text('Chỉnh sửa thể loại'),
                         content: Container(
                           padding: const EdgeInsets.all(8),
-                          child: UpdateRoomForm(
+                          child: RoomForm(
                             formKey: formKey,
                             room: room,
                           ),

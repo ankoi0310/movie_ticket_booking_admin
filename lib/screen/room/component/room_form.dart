@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 
-class AddRoomForm extends StatelessWidget {
-  const AddRoomForm({
+class RoomForm extends StatelessWidget {
+  const RoomForm({
     super.key,
     required this.formKey,
-    required this.entity,
+    required this.room,
   });
 
   final GlobalKey<FormState> formKey;
-  final Room entity;
+  final Room room;
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +86,7 @@ class AddRoomForm extends StatelessWidget {
                     labelText: 'Tên phòng',
                   ),
                   onSaved: (value) {
-                    entity.name = value!;
+                    room.name = value!;
                   },
                 ),
                 const SizedBox(
