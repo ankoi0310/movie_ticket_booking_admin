@@ -52,6 +52,7 @@ class _RoomScreenState extends State<RoomScreen> {
                               child: const Text('Thêm'),
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
+                                  print(newRoom.toJson());
                                   _formKey.currentState!.save();
                                   roomProvider.createRoom(newRoom).then((value) => Navigator.of(context).pop());
                                 }

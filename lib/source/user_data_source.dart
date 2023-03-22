@@ -17,7 +17,7 @@ class GenreDataTableSource extends DataTableSource {
     return DataRow2.byIndex(
       index: index,
       cells: <DataCell>[
-        DataCell(Text(genre.id)),
+        DataCell(Text(genre.id ?? '')),
         DataCell(Text(genre.name)),
         DataCell(
           Row(
@@ -98,7 +98,7 @@ class GenreDataTableSource extends DataTableSource {
                           ElevatedButton(
                             child: const Text('Xoá'),
                             onPressed: () {
-                              provider.deleteGenre(genre.id).then((value) async => {
+                              provider.deleteGenre(genre.id ?? '').then((value) async => {
                                     Navigator.of(context).pop(),
                                   });
                             },
