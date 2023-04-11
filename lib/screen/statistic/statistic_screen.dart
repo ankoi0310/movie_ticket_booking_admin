@@ -7,8 +7,6 @@ import 'package:movie_ticket_booking_admin_flutter_nlu/constant/constants.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/util/app_util.dart';
 
 class StatisticScreen extends StatefulWidget {
-  static const String routeName = '/statistic';
-
   const StatisticScreen({Key? key}) : super(key: key);
 
   @override

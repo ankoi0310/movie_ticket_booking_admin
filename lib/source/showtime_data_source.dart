@@ -1,24 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/screen/branch/component/branch_form.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/showtime/component/showtime_form.dart';
 
-class BranchDataTableSource extends DataTableSource {
-  BranchDataTableSource({required this.context, required this.provider});
+class ShowtimeDataTableSource extends DataTableSource {
+  ShowtimeDataTableSource({required this.context, required this.provider});
 
   final BuildContext context;
-  final BranchProvider provider;
+  final ShowtimeProvider provider;
 
   @override
   DataRow2 getRow(int index) {
     assert(index >= 0);
-    final Branch branch = provider.branches[index];
+    final Showtime showtime = provider.showtimes[index];
     return DataRow2.byIndex(
       index: index,
       cells: <DataCell>[
-        DataCell(Text(branch.id.toString())),
-        DataCell(Text(branch.name)),
-        DataCell(Text(branch.address)),
-        DataCell(Text(branch.branchStatus.value)),
+        DataCell(Text(showtime.movie.name)),
         DataCell(
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -33,29 +30,29 @@ class BranchDataTableSource extends DataTableSource {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: const Text('Chỉnh sửa chi nhánh'),
+                        title: const Text('Chỉnh sửa thể loại'),
                         content: Container(
                           padding: const EdgeInsets.all(8),
-                          child: BranchForm(
+                          child: ShowtimeForm(
                             formKey: formKey,
-                            branch: branch,
+                            showtime: showtime,
                           ),
                         ),
                         actions: [
                           TextButton(
+                            child: const Text('Hủy'),
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
-                            child: const Text('Hủy'),
                           ),
                           TextButton(
+                            child: const Text('Lưu'),
                             onPressed: () {
                               if (formKey.currentState!.validate()) {
                                 formKey.currentState!.save();
-                                provider.updateBranch(branch).then((value) async => {Navigator.of(context).pop()});
+                                provider.updateShowtime(showtime).then((value) async => Navigator.of(context).pop());
                               }
                             },
-                            child: const Text('Lưu'),
                           ),
                         ],
                       ),
@@ -74,18 +71,11 @@ class BranchDataTableSource extends DataTableSource {
                         title: const Text('Xoá thể loại'),
                         content: const Text('Bạn có chắc chắn muốn xoá?'),
                         actions: <Widget>[
-                          ElevatedButton(
-                            child: const Text('Hủy'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
+                          ElevatedButton(child: const Text('Hủy'), onPressed: () => Navigator.of(context).pop()),
                           ElevatedButton(
                             child: const Text('Xoá'),
                             onPressed: () {
-                              provider.deleteBranch(branch.id).then((value) async => {
-                                    Navigator.of(context).pop(),
-                                  });
+                              provider.deleteShowtime(showtime.id!).then((value) async => Navigator.of(context).pop());
                             },
                           ),
                         ],
@@ -102,7 +92,7 @@ class BranchDataTableSource extends DataTableSource {
   }
 
   @override
-  int get rowCount => provider.branches.length;
+  int get rowCount => provider.showtimes.length;
 
   @override
   bool get isRowCountApproximate => false;

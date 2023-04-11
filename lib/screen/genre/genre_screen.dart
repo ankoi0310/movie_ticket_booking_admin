@@ -79,10 +79,6 @@ class _GenreScreenState extends State<GenreScreen> {
                 source: GenreDataTableSource(context: context, provider: genreProvider),
                 columns: const [
                   DataColumn2(
-                    label: Center(child: Text('ID')),
-                    size: ColumnSize.S,
-                  ),
-                  DataColumn2(
                     label: Center(child: Text('Tên thể loại')),
                     size: ColumnSize.L,
                   ),

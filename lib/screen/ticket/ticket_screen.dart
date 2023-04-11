@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 class TicketScreen extends StatefulWidget {
-  static const String routeName = '/ticket';
-
   const TicketScreen({Key? key}) : super(key: key);
 
   @override

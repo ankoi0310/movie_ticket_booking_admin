@@ -13,6 +13,8 @@ class BranchScreen extends StatefulWidget {
 class _BranchScreenState extends State<BranchScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   int currentPageIndex = 0;
+  int sortColumnIndex = 0;
+  bool isAscending = true;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +23,7 @@ class _BranchScreenState extends State<BranchScreen> {
     return FutureBuilder(
       future: branchProvider.getBranches(),
       builder: (context, snapshot) {
+        print(branchProvider.branches.length);
         return Column(
           children: [
             Container(
@@ -77,6 +80,9 @@ class _BranchScreenState extends State<BranchScreen> {
                     currentPageIndex = index;
                   });
                 },
+                sortAscending: isAscending,
+                sortArrowIcon: Icons.arrow_downward,
+                sortColumnIndex: sortColumnIndex,
                 source: BranchDataTableSource(context: context, provider: branchProvider),
                 columns: const [
                   DataColumn2(
@@ -85,13 +91,15 @@ class _BranchScreenState extends State<BranchScreen> {
                   ),
                   DataColumn2(
                     label: Center(child: Text('Tên chi nhánh')),
-                    size: ColumnSize.L,
-                    fixedWidth: 250,
+                    size: ColumnSize.M,
                   ),
                   DataColumn2(
                     label: Center(child: Text('Địa chỉ')),
                     size: ColumnSize.L,
-                    fixedWidth: 350,
+                  ),
+                  DataColumn2(
+                    label: Center(child: Text('Trạng thái')),
+                    size: ColumnSize.S,
                   ),
                   DataColumn2(
                     label: Center(child: Text('')),

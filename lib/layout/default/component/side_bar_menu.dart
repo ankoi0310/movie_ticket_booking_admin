@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/model/menu_icon.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/dto/menu_icon.dart';
 
 import 'side_bar_tile.dart';
 

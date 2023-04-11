@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 class PromotionScreen extends StatefulWidget {
-  static const routeName = '/promotion';
-
   const PromotionScreen({Key? key}) : super(key: key);
 
   @override

@@ -50,7 +50,7 @@ class GenreDataTableSource extends DataTableSource {
                             onPressed: () {
                               if (formKey.currentState!.validate()) {
                                 formKey.currentState!.save();
-                                provider.updateGenre(genre).then((value) async => {Navigator.of(context).pop()});
+                                provider.updateGenre(genre).then((value) async => Navigator.of(context).pop());
                               }
                             },
                           ),
