@@ -10,6 +10,7 @@ class AppRouterDelegate extends RouterDelegate<RoutePath> with ChangeNotifier, P
   String? pathName;
   bool isError = false;
 
+
   factory AppRouterDelegate({bool? isLoggedIn}) {
     _instance.isLoggedIn = isLoggedIn;
     return _instance;

@@ -1,10 +1,12 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 
 class App extends StatelessWidget {
   final bool isLoggedIn;
 
-  const App({Key? key, required this.isLoggedIn}) : super(key: key);
+  App({Key? key, required this.isLoggedIn}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {

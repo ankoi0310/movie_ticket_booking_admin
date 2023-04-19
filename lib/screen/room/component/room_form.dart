@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/component/hover_builder.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/model/seat.dart';
@@ -29,8 +30,13 @@ class _RoomFormState extends State<RoomForm> {
 
   late List<Seat> seats = [];
 
+  String? branchSelected = "";
+
   @override
   Widget build(BuildContext context) {
+    final BranchProvider branchProvider =
+        Provider.of<BranchProvider>(context, listen: false);
+
     void createLane(int lane, int indexColumn, int indexRow) {
       switch (lane) {
         // Right
@@ -234,71 +240,65 @@ class _RoomFormState extends State<RoomForm> {
                       flex: 5,
                       child: Container(
                         padding: const EdgeInsets.only(right: 50),
-                        child: DropdownButton2(
-                          isExpanded: true,
-                          items: const [
-                            DropdownMenuItem(
-                              value: 0,
-                              child: Text(
-                                "Chọn chi nhánh",
-                                style: TextStyle(
-                                  fontSize: 16,
+                        child: FutureBuilder(
+                            future: branchProvider.getBranches(),
+                            builder: (context, snapshot) {
+                              List<DropdownMenuItem> items = [
+                                const DropdownMenuItem(
+                                  child: Text("Chọn chi nhánh"),
+                                  value: "",
                                 ),
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: 1,
-                              child: Text(
-                                "Galaxy Nguyễn Du",
-                                style: TextStyle(
-                                  fontSize: 16,
+                              ];
+                              items.addAll(branchProvider.branches
+                                  .map((e) => DropdownMenuItem(
+                                        child: Text(e.name),
+                                        value: e.id,
+                                      ))
+                                  .toList());
+                              return DropdownButton2(
+                                isExpanded: true,
+                                items: items,
+                                value: branchSelected,
+                                onChanged: (value) {
+                                  setState(() {
+                                    branchSelected = value!;
+                                  });
+                                },
+                                buttonStyleData: const ButtonStyleData(
+                                  // width: 300,
+                                  padding: EdgeInsets.only(right: 14),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                  ),
+                                  elevation: 0,
                                 ),
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: 2,
-                              child: Text(
-                                "Galaxy Trung Chánh",
-                                style: TextStyle(
-                                  fontSize: 16,
+                                iconStyleData: const IconStyleData(
+                                  icon: Icon(Icons.arrow_forward_ios_outlined),
+                                  iconSize: 14,
+                                  openMenuIcon:
+                                      Icon(Icons.keyboard_arrow_down, size: 14),
                                 ),
-                              ),
-                            ),
-                          ],
-                          value: 1,
-                          onChanged: (value) {},
-                          buttonStyleData: const ButtonStyleData(
-                            // width: 300,
-                            padding: EdgeInsets.only(right: 14),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                            ),
-                            elevation: 0,
-                          ),
-                          iconStyleData: const IconStyleData(
-                            icon: Icon(Icons.arrow_forward_ios_outlined),
-                            iconSize: 14,
-                            openMenuIcon: Icon(Icons.keyboard_arrow_down, size: 14),
-                          ),
-                          dropdownStyleData: DropdownStyleData(
-                            maxHeight: 200,
-                            // width: 300,
-                            decoration:
-                                const BoxDecoration(color: Colors.white),
-                            elevation: 8,
-                            scrollbarTheme: ScrollbarThemeData(
-                              radius: const Radius.circular(40),
-                              thickness: MaterialStateProperty.all<double>(6),
-                              thumbVisibility:
-                                  MaterialStateProperty.all<bool>(true),
-                            ),
-                          ),
-                          menuItemStyleData: const MenuItemStyleData(
-                            height: 40,
-                            padding: EdgeInsets.symmetric(horizontal: 14),
-                          ),
-                          underline: Container(),
-                        ),
+                                dropdownStyleData: DropdownStyleData(
+                                  maxHeight: 200,
+                                  // width: 300,
+                                  decoration:
+                                      const BoxDecoration(color: Colors.white),
+                                  elevation: 8,
+                                  scrollbarTheme: ScrollbarThemeData(
+                                    radius: const Radius.circular(40),
+                                    thickness:
+                                        MaterialStateProperty.all<double>(6),
+                                    thumbVisibility:
+                                        MaterialStateProperty.all<bool>(true),
+                                  ),
+                                ),
+                                menuItemStyleData: const MenuItemStyleData(
+                                  height: 40,
+                                  padding: EdgeInsets.symmetric(horizontal: 14),
+                                ),
+                                underline: Container(),
+                              );
+                            }),
                       ),
                     ),
                     // Button check
@@ -316,7 +316,10 @@ class _RoomFormState extends State<RoomForm> {
                       child: Container(
                         padding: const EdgeInsets.only(right: 50),
                         child: TextFormField(
-                          // initialValue: "0",
+                          initialValue: "1",
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                          ],
                           decoration: const InputDecoration(
                             labelText: 'Số cột',
                             labelStyle: TextStyle(
@@ -324,7 +327,9 @@ class _RoomFormState extends State<RoomForm> {
                             ),
                           ),
                           onChanged: (value) {
-                            column = int.parse(value!);
+                            setState(() {
+                              column = value.isEmpty ? row = 1 :int.parse(value!);
+                            });
                           },
                         ),
                       ),
@@ -334,7 +339,10 @@ class _RoomFormState extends State<RoomForm> {
                       child: Container(
                         padding: const EdgeInsets.only(right: 50),
                         child: TextFormField(
-                          // initialValue: "0",
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                          ],
+                          initialValue: "1",
                           decoration: const InputDecoration(
                             labelText: 'Số hàng',
                             labelStyle: TextStyle(
@@ -342,7 +350,9 @@ class _RoomFormState extends State<RoomForm> {
                             ),
                           ),
                           onChanged: (value) {
-                            row = int.parse(value!);
+                            setState(() {
+                              row = value.isEmpty ? row = 1 :int.parse(value!);
+                            });
                           },
                         ),
                       ),

@@ -15,9 +15,16 @@ class GenreProvider extends ChangeNotifier {
 
   Future<List<Genre>> getGenres() async {
     try {
-      final response = await http.get(Uri.parse('http://localhost:3000/api/genre'));
+      final response = await http.post(
+          Uri.parse('http://localhost:8081/api/v1/genre/search'),
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode({})
 
-      Map jsonResponse = jsonDecode(response.body);
+      );
+      // decode response body to json with utf8
+      Map jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
 
       if (response.statusCode == 200) {
         final data = jsonResponse['data'] as List;
@@ -27,13 +34,14 @@ class GenreProvider extends ChangeNotifier {
       notifyListeners();
       return _genres;
     } catch (_) {
+      print('error: $_');
       rethrow;
     }
   }
 
   Future<Genre?> getGenreById(String id) async {
     try {
-      final response = await http.get(Uri.parse('http://localhost:3000/api/genre/$id'));
+      final response = await http.get(Uri.parse('http://localhost:8081/api/genre/$id'));
 
       Map jsonResponse = jsonDecode(response.body);
 
@@ -98,7 +106,7 @@ class GenreProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteGenre(String id) async {
+  Future<void> deleteGenre(int id) async {
     try {
       final response = await http.delete(Uri.parse('http://localhost:3000/api/genre/$id'));
 
