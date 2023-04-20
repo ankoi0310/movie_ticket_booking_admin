@@ -18,7 +18,7 @@ export 'dto/room.dart';
 // export 'dto/promotion.dart';
 export 'dto/showtime.dart';
 export 'dto/ticket.dart';
-export 'dto/user.dart';
+export 'dto/user/user.dart';
 export 'layout/default/default_layout.dart';
 export 'provider/advertisement_provider.dart';
 export 'provider/branch_provider.dart';
