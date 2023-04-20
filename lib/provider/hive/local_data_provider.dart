@@ -1,15 +1,15 @@
 /// Local Data Provider Interface class
 abstract class LocalDataProviderContract {
-  Future deleteData(
+  Future delete(
     String table, {
     String? whereClauseValue,
     List<dynamic> whereClauseArgs = const [],
     List<String> keys = const [],
   }) async {}
 
-  Future<void> insertData(String table, Map<String, dynamic> values) async {}
+  Future<void> insert(String table, Map<String, dynamic> values) async {}
 
-  Future<Map<String, dynamic>> readData(
+  Future<Map<String, dynamic>> read(
     String table, {
     bool distinct,
     List<String> keys = const [],
@@ -22,7 +22,7 @@ abstract class LocalDataProviderContract {
     int limit,
   });
 
-  Future updateData(
+  Future update(
     String table,
     Map<String, dynamic> values, {
     String? whereClauseValue,

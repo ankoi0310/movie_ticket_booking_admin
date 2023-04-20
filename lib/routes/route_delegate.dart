@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/layout/full_width/full_width_layout.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/service/hive_storage_service.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/service/authentication_service.dart';
 
 class AppRouterDelegate extends RouterDelegate<RoutePath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<RoutePath> {
   static final AppRouterDelegate _instance = AppRouterDelegate._();
@@ -17,8 +17,11 @@ class AppRouterDelegate extends RouterDelegate<RoutePath> with ChangeNotifier, P
 
   AppRouterDelegate._();
 
+  static AppRouterDelegate get instance => _instance;
+
   TransitionDelegate transitionDelegate = CustomTransitionDelegate();
 
+  final AuthenticationService _authentacationService = AuthenticationService.instance;
   late List<Page> _stack = [];
 
   @override
@@ -86,7 +89,7 @@ class AppRouterDelegate extends RouterDelegate<RoutePath> with ChangeNotifier, P
 
   @override
   Future<void> setNewRoutePath(RoutePath configuration) async {
-    bool isLoggedIn = await HiveDataStorageService.getUser();
+    bool isLoggedIn = await _authentacationService.isLoggedIn();
     pathName = configuration.pathName;
 
     if (configuration.isOtherPage) {

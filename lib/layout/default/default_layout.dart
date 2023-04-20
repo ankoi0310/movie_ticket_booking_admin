@@ -17,6 +17,7 @@ class DefaultLayout extends StatefulWidget {
 
 class _DefaultLayoutState extends State<DefaultLayout> {
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
+  final RouteHandler _routeHandler = RouteHandler.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -56,13 +57,13 @@ class _DefaultLayoutState extends State<DefaultLayout> {
                       children: [
                         Flexible(
                           flex: 1,
-                          child: Header(title: RouteHandler().getRouteTitle(widget.routeName)),
+                          child: Header(title: _routeHandler.getRouteTitle(widget.routeName)),
                         ),
                         SizedBox(height: SizeConfig.blockSizeVertical * 4),
                         Flexible(
                           flex: 9,
                           child: FutureBuilder(
-                            future: RouteHandler().getRouteWidget(widget.routeName),
+                            future: _routeHandler.getRouteWidget(widget.routeName),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
                                 return snapshot.data as Widget;

@@ -11,6 +11,8 @@ class FullWidthLayout extends StatefulWidget {
 }
 
 class _FullWidthLayoutState extends State<FullWidthLayout> {
+  final RouteHandler _routeHandler = RouteHandler.instance;
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -21,7 +23,7 @@ class _FullWidthLayoutState extends State<FullWidthLayout> {
         height: SizeConfig.screenHeight,
         width: SizeConfig.screenWidth,
         child: FutureBuilder(
-          future: RouteHandler().getRouteWidget(widget.routeName),
+          future: _routeHandler.getRouteWidget(widget.routeName),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return snapshot.data as Widget;

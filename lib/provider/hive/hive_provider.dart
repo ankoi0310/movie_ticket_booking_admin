@@ -1,17 +1,19 @@
 import 'package:hive/hive.dart';
 
-import 'data_provider.dart';
+import 'local_data_provider.dart';
 
 /// Concrete implementation for local hive data provider
-class HiveDataProvider implements LocalDataProviderContract {
-  static final HiveDataProvider _instance = HiveDataProvider._();
+class HiveProvider implements LocalDataProviderContract {
+  HiveProvider._();
 
-  factory HiveDataProvider() => _instance;
+  static final HiveProvider _instance = HiveProvider._();
 
-  HiveDataProvider._();
+  factory HiveProvider() => _instance;
+
+  static HiveProvider get instance => _instance;
 
   @override
-  Future deleteData(
+  Future delete(
     String table, {
     String? whereClauseValue,
     List whereClauseArgs = const [],
@@ -30,7 +32,7 @@ class HiveDataProvider implements LocalDataProviderContract {
   }
 
   @override
-  Future<void> insertData(String table, Map<dynamic, dynamic> values) async {
+  Future<void> insert(String table, Map<dynamic, dynamic> values) async {
     Box box = await _getBox(table);
     if (values.isNotEmpty) {
       values.forEach((k, v) => box.put(k, v));
@@ -38,7 +40,7 @@ class HiveDataProvider implements LocalDataProviderContract {
   }
 
   @override
-  Future<Map<String, dynamic>> readData(
+  Future<Map<String, dynamic>> read(
     String table, {
     bool? distinct,
     List<String> keys = const [],
@@ -62,7 +64,7 @@ class HiveDataProvider implements LocalDataProviderContract {
   }
 
   @override
-  Future updateData(
+  Future update(
     String table,
     Map<String, dynamic> values, {
     String? whereClauseValue,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/service/hive_storage_service.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/service/authentication_service.dart';
 
 class AppBarActionItems extends StatelessWidget {
   const AppBarActionItems({
@@ -10,6 +10,8 @@ class AppBarActionItems extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AuthenticationService authentacationService = AuthenticationService.instance;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -23,7 +25,7 @@ class AppBarActionItems extends StatelessWidget {
         Row(children: [
           InkWell(
             onTap: () async {
-              await HiveDataStorageService.logOutUser();
+              await authentacationService.logout();
               AppRouterDelegate().setPathName(RouteData.login.name, loggedIn: false);
             },
             child: const CircleAvatar(

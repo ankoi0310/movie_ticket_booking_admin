@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/service/hive_storage_service.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/service/authentication_service.dart';
 
 enum RouteData {
   login,
@@ -25,6 +25,10 @@ class RouteHandler {
 
   RouteHandler._();
 
+  static RouteHandler get instance => _instance;
+
+  final AuthenticationService _authentacationService = AuthenticationService.instance;
+
   /// Return [WidgetToRender, PathName]
   /// [WidgetToRender] - Render specific widget
   /// [PathName] - Redirect to [PathName] if invalid path is entered
@@ -39,7 +43,7 @@ class RouteHandler {
         routeData = RouteData.values.firstWhere((element) => element.name == pathName, orElse: () => RouteData.notFound);
 
         if (routeData != RouteData.notFound) {
-          bool isLoggedIn = await HiveDataStorageService.getUser();
+          bool isLoggedIn = await _authentacationService.isLoggedIn();
           if (isLoggedIn) {
             switch (routeData) {
               case RouteData.login:
