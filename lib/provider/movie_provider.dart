@@ -1,9 +1,14 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:movie_ticket_booking_admin_flutter_nlu/constant/api.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/exception/bad_request_exception.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/service/firebase_storage_service.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/util/string_util.dart';
 
 class MovieProvider with ChangeNotifier {
   Movie? _movie;
@@ -13,6 +18,8 @@ class MovieProvider with ChangeNotifier {
   List<Movie> _movies = [];
 
   List<Movie> get movies => _movies;
+
+  FirebaseStorageService firebaseStorageService = FirebaseStorageService();
 
   Future<List<Movie>> getMovies() async {
     try {
@@ -31,7 +38,7 @@ class MovieProvider with ChangeNotifier {
     }
   }
 
-  Future<Movie?> getMovieById(String id) async {
+  Future<Movie?> getMovieById(int id) async {
     try {
       final response = await http.get(Uri.parse('$baseUrl/movie/$id'));
 
@@ -47,7 +54,11 @@ class MovieProvider with ChangeNotifier {
     }
   }
 
-  Future<Movie?> createMovie(Movie movie) async {
+  Future<Movie?> createMovie(Movie movie, Uint8List imageVerticalBytes,
+      Uint8List imageHorizontalBytes) async {
+    movie.imageVertical = '/images/${StringUtil.convert(movie.name)}_vertical.jpg';
+    movie.imageHorizontal = '/images/${StringUtil.convert(movie.name)}_horizontal.jpg';
+
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/movie'),
@@ -55,20 +66,25 @@ class MovieProvider with ChangeNotifier {
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode({
-          'name': movie.name,
-          'description': movie.description,
-          'image': movie.image,
+          "movie": movie.toJson(),
         }),
       );
 
-      Map jsonResponse = jsonDecode(response.body);
+      Map httpResponse = jsonDecode(utf8.decode(response.bodyBytes));
+      if (response.statusCode == 200) {
+        firebaseStorageService.uploadImage(
+           movie.imageVertical, imageVerticalBytes);
+        firebaseStorageService.uploadImage(
+            movie.imageHorizontal, imageHorizontalBytes);
 
-      if (response.statusCode == 201) {
-        _movie = Movie.fromJson(jsonResponse['data']);
+        _movie = Movie.fromJson(httpResponse['data']);
+      } else if (response.statusCode == 400) {
+        throw BadRequestException(httpResponse['message']);
       }
 
       return _movie;
     } catch (_) {
+      print('error: $_');
       rethrow;
     }
   }
@@ -80,11 +96,7 @@ class MovieProvider with ChangeNotifier {
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode({
-          'name': movie.name,
-          'description': movie.description,
-          'image': movie.image,
-        }),
+        body: jsonEncode({}),
       );
 
       Map jsonResponse = jsonDecode(response.body);
@@ -99,7 +111,7 @@ class MovieProvider with ChangeNotifier {
     }
   }
 
-  Future<void> deleteMovie(String id) async {
+  Future<void> deleteMovie(int id) async {
     try {
       final response = await http.delete(Uri.parse('$baseUrl/movie/$id'));
 

@@ -18,7 +18,7 @@ class MovieDataTableSource extends DataTableSource {
         DataCell(Text(movie.name)),
         DataCell(
           ReadMoreText(
-            movie.description,
+            movie.storyLine,
             trimLines: 2,
             colorClickableText: Colors.blue,
             trimMode: TrimMode.Line,
@@ -27,7 +27,7 @@ class MovieDataTableSource extends DataTableSource {
             moreStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
         ),
-        DataCell(Text(movie.image)),
+        DataCell(Text(movie.imageVertical)),
         DataCell(Text(movie.genres.map((e) => e.name).join(', ').toString())),
         DataCell(
           Row(
@@ -49,6 +49,9 @@ class MovieDataTableSource extends DataTableSource {
                           child: MovieForm(
                             formKey: formKey,
                             movie: movie,
+                            submitImageHorizontal: (image) {},
+                            submitImageVertical: (image) {},
+                            loading: false,
                           ),
                         ),
                         actions: [
@@ -93,7 +96,7 @@ class MovieDataTableSource extends DataTableSource {
                             },
                           ),
                           ElevatedButton(
-                            child: const Text('Xoá'),
+                            child: Text('Xoá'),
                             onPressed: () {
                               provider.deleteMovie(movie.id!).then((value) async => {
                                     Navigator.of(context).pop(),

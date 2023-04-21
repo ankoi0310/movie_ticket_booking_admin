@@ -16,9 +16,16 @@ class GenreProvider extends ChangeNotifier {
 
   Future<List<Genre>> getGenres() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/genre'));
+      final response = await http.post(
+          Uri.parse('$baseUrl/genre/search'),
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode({})
+      );
 
-      Map jsonResponse = jsonDecode(response.body);
+      // decode response body to json with utf8
+      Map jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
 
       if (response.statusCode == 200) {
         final data = jsonResponse['data'] as List;
@@ -28,6 +35,7 @@ class GenreProvider extends ChangeNotifier {
       notifyListeners();
       return _genres;
     } catch (_) {
+      print('error: $_');
       rethrow;
     }
   }

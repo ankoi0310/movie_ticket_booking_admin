@@ -15,7 +15,7 @@ class RoomDataTableSource extends DataTableSource {
     return DataRow2.byIndex(
       index: index,
       cells: <DataCell>[
-        DataCell(Text(room.id)),
+        DataCell(Text(room.id.toString())),
         DataCell(Text(room.name)),
         DataCell(
           Row(
@@ -76,7 +76,7 @@ class RoomDataTableSource extends DataTableSource {
                           ElevatedButton(
                             child: const Text('Xoá'),
                             onPressed: () {
-                              provider.deleteRoom(room.id).then((value) async => Navigator.of(context).pop());
+                              provider.deleteRoom(room.id as String).then((value) async => Navigator.of(context).pop());
                             },
                           ),
                         ],
