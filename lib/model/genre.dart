@@ -35,7 +35,7 @@ class Genre extends General {
           .map((e) => Movie.fromJson(e))
           .toList()
           : [],
-      state: GeneralState.values.firstWhere((e) => e.value == json['state']),
+      state: GeneralState.fromValue(json['state']),
       createdDate: DateFormat('dd-MM-yyyy HH:mm:ss').parse(json['createdDate']),
       modifiedDate: DateFormat('dd-MM-yyyy HH:mm:ss').parse(json['modifiedDate']),
       deletedDate: json['deletedDate'] != null

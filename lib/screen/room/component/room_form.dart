@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/component/hover_builder.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/model/seat.dart';
 
@@ -19,8 +18,8 @@ class RoomForm extends StatefulWidget {
 }
 
 class _RoomFormState extends State<RoomForm> {
-  late int row;
-  late int column;
+  late int row = 15;
+  late int column = 15;
 
   late int laneRow;
   late int laneColumn;
@@ -37,26 +36,6 @@ class _RoomFormState extends State<RoomForm> {
     final BranchProvider branchProvider =
         Provider.of<BranchProvider>(context, listen: false);
 
-    void createLane(int lane, int indexColumn, int indexRow) {
-      switch (lane) {
-        // Right
-        case 0:
-          {
-            setState(() {
-              widget.room.marginRightCols.add(indexColumn);
-            });
-            break;
-          }
-        // Left
-        case 1:
-          {
-            setState(() {
-              widget.room.marginLeftCols.add(indexColumn);
-            });
-          }
-      }
-    }
-
     void check() {
       setState(() {
         showSeats = true;
@@ -66,13 +45,14 @@ class _RoomFormState extends State<RoomForm> {
         // Create Seat
         for (int i = 0; i < row; i++) {
           for (int j = 0; j < column; j++) {
-            seats.add(Seat.withoutId(
-                position: "${alphabet[i]}${j + 1}",
-                columnIndex: j + 1,
-                rowIndex: i + 1,
-                state: "Còn trống",
-                createdAt: "",
-                updatedAt: ""));
+            seats.add(Seat.initialize(
+              code: "${alphabet[i]}${j + 1}",
+              columnIndex: j,
+              col: j,
+              rowIndex: i,
+              type: SeatType.normal,
+              room: widget.room,
+            ));
           }
         }
         widget.room.seats = seats;
@@ -82,30 +62,106 @@ class _RoomFormState extends State<RoomForm> {
 
     void resetLane() {
       setState(() {
+        widget.room.seats = [];
         widget.room.marginRightCols = [];
         widget.room.marginLeftCols = [];
       });
     }
 
-    Widget _buildSeat(String alphabet, int index) {
-      return Container(
-        width: 60,
-        height: 60,
-        decoration: BoxDecoration(
-          color: Colors.grey,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        margin: EdgeInsets.only(
-          left: widget.room.marginLeftCols.contains(index) ? 50 : 3,
-          right: widget.room.marginRightCols.contains(index) ? 50 : 3,
-          top: 3,
-          bottom: 3,
-        ),
-        child: Center(
-          child: Text(
-            "$alphabet$index",
-            style: const TextStyle(
-              fontSize: 16,
+    Widget _buildSeat(Seat seat) {
+      return InkWell(
+        hoverColor: Colors.transparent,
+        focusColor: Colors.transparent,
+        onTap: () {
+          setState(() {
+            if (seat.isSeat) {
+              seats
+                  .where((e) =>
+                      e.columnIndex > seat.columnIndex &&
+                      e.rowIndex == seat.rowIndex)
+                  .toList()
+                  .forEach((element) {
+                --element.columnIndex;
+                element.code =
+                    "${alphabet[element.rowIndex]}${element.columnIndex}";
+              });
+            } else {
+              Seat seatBefore;
+              int b = seat.col - 1;
+              Seat seatAfter;
+              int a = seat.col + 1;
+
+              print('seat ${seat.columnIndex}');
+
+              print('a $a');
+              print('b $b');
+              do {
+                seatBefore = seats.where((element) =>
+                    element.columnIndex == b && element.rowIndex == seat.rowIndex).first;
+              } while (!seatBefore.isSeat && b-- >= 0);
+
+              do {
+                seatAfter = seats.where((element) =>
+                    element.columnIndex == a && element.rowIndex == seat.rowIndex).first;
+              } while (!seatAfter.isSeat && a++ < column);
+              print('a ${seatAfter.columnIndex}');
+              print('b ${seatBefore.columnIndex}');
+
+              int valueBefore = seatBefore.columnIndex;
+              int valueAfter = seatAfter.columnIndex;
+              int valueIndex = ((valueBefore + valueAfter) ~/ 2).round();
+              seat.columnIndex = valueIndex;
+              // print('valueIndex: $valueIndex');
+              // print('valueBefore: $valueBefore');
+              // print('valueAfter: $valueAfter');
+              seats
+                  .where((element) => element.isSeat &&
+                      element.columnIndex >= valueIndex &&
+                      element.rowIndex == seat.rowIndex)
+                  .forEach((element) {
+                print('element: ${element.columnIndex}');
+                ++element.columnIndex;
+                element.code =
+                    "${alphabet[element.rowIndex]}${element.columnIndex}";
+              });
+
+              // seats.where((element) =>
+              // element.isSeat && element.columnIndex < valueIndex &&
+              //     element.rowIndex == seat.rowIndex
+              // ).forEach((element) {
+              //   --element.columnIndex;
+              //   element.code =
+              //   "${alphabet[element.rowIndex]}${element.columnIndex}";
+              // });
+            }
+            seat.isSeat = !seat.isSeat;
+          });
+        },
+        child: Container(
+          width: 30,
+          height: 30,
+          decoration: BoxDecoration(
+            color: Colors.grey.withOpacity(seat.isSeat ? 1 : 0.2),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: const EdgeInsets.only(
+            left: 3,
+            right: 3,
+            top: 3,
+            bottom: 3,
+          ),
+          margin: const EdgeInsets.only(
+            left: 3,
+            right: 3,
+            top: 3,
+            bottom: 3,
+          ),
+          child: Center(
+            child: Text(
+              "${seat.isSeat ? seat.columnIndex : 'x'}",
+              style: const TextStyle(
+                fontSize: 16,
+              ),
             ),
           ),
         ),
@@ -116,90 +172,105 @@ class _RoomFormState extends State<RoomForm> {
     Widget _buildSeats() {
       return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: List.generate(row + 1, (indexRow) {
-              if (indexRow == 0) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: List.generate(column, (indexCol) {
-                    return Container(
-                      width: 60,
-                      height: 30,
-                      margin: EdgeInsets.only(
-                        left: widget.room.marginLeftCols.contains(indexCol + 1)
-                            ? 50
-                            : 3,
-                        right:
-                            widget.room.marginRightCols.contains(indexCol + 1)
-                                ? 50
-                                : 3,
-                        top: 3,
-                        bottom: 3,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          !widget.room.marginLeftCols.contains(indexCol + 1)
-                              ? Container(
-                                  child: InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        createLane(
-                                            1, indexCol + 1, indexRow + 1);
-                                      });
-                                    },
-                                    child: Container(
-                                      child: const Icon(
-                                        Icons.chevron_left,
-                                        size: 20,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : Container(),
-                          Center(
-                            child: Text(
-                              "${indexCol + 1}",
-                              style: const TextStyle(
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                          !widget.room.marginRightCols.contains(indexCol + 1)
-                              ? Container(
-                                  child: InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        createLane(0, indexCol + 1, indexRow);
-                                      });
-                                    },
-                                    child: Container(
-                                      child: const Icon(
-                                        Icons.chevron_right,
-                                        size: 20,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : Container(),
-                        ],
-                      ),
-                    );
-                  }),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: List.generate(row, (index) {
+                return Container(
+                  width: 30,
+                  height: 30,
+                  padding: const EdgeInsets.only(
+                    left: 3,
+                    right: 3,
+                    top: 3,
+                    bottom: 3,
+                  ),
+                  margin: const EdgeInsets.only(
+                    left: 3,
+                    right: 20,
+                    top: 3,
+                    bottom: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.grey,
+                    border: Border.all(
+                      color: Colors.black,
+                    ),
+                  ),
+                  child: Center(
+                      child: Text(
+                    (alphabet[index]).toString(),
+                    style: const TextStyle(
+                      fontSize: 16,
+                    ),
+                  )),
                 );
-              }
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: List.generate(column, (indexCol) {
-                  return _buildSeat(alphabet[indexRow - 1], indexCol + 1);
-                }),
-              );
-            })),
+              }),
+            ),
+            Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: List.generate(row, (indexRow) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: List.generate(column, (indexCol) {
+                      return _buildSeat(seats[indexRow * column + indexCol]);
+                    }),
+                  );
+                })),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: List.generate(row, (index) {
+                return Container(
+                  width: 30,
+                  height: 30,
+                  padding: const EdgeInsets.only(
+                    left: 3,
+                    right: 3,
+                    top: 3,
+                    bottom: 3,
+                  ),
+                  margin: const EdgeInsets.only(
+                    left: 20,
+                    right: 3,
+                    top: 3,
+                    bottom: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.grey,
+                    border: Border.all(
+                      color: Colors.black,
+                    ),
+                  ),
+                  child: Center(
+                      child: Text(
+                    (alphabet[index]).toString(),
+                    style: const TextStyle(
+                      fontSize: 16,
+                    ),
+                  )),
+                );
+              }),
+              // Row(
+              //   children: List.generate(row, (indexRow) {
+              //     return Row(
+              //       mainAxisAlignment: MainAxisAlignment.center,
+              //       crossAxisAlignment: CrossAxisAlignment.center,
+              //       children: List.generate(column, (indexCol) {
+              //         return _buildSeat(alphabet[indexRow], indexCol + 1);
+              //       }),
+              //     );
+              //   }),
+              // ),
+            ),
+          ],
+        ),
       );
     }
 
@@ -316,7 +387,7 @@ class _RoomFormState extends State<RoomForm> {
                       child: Container(
                         padding: const EdgeInsets.only(right: 50),
                         child: TextFormField(
-                          initialValue: "1",
+                          initialValue: "15",
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                           ],
@@ -328,7 +399,8 @@ class _RoomFormState extends State<RoomForm> {
                           ),
                           onChanged: (value) {
                             setState(() {
-                              column = value.isEmpty ? row = 1 :int.parse(value!);
+                              column =
+                                  value.isEmpty ? row = 1 : int.parse(value!);
                             });
                           },
                         ),
@@ -342,7 +414,7 @@ class _RoomFormState extends State<RoomForm> {
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                           ],
-                          initialValue: "1",
+                          initialValue: "15",
                           decoration: const InputDecoration(
                             labelText: 'Số hàng',
                             labelStyle: TextStyle(
@@ -351,7 +423,7 @@ class _RoomFormState extends State<RoomForm> {
                           ),
                           onChanged: (value) {
                             setState(() {
-                              row = value.isEmpty ? row = 1 :int.parse(value!);
+                              row = value.isEmpty ? row = 1 : int.parse(value!);
                             });
                           },
                         ),

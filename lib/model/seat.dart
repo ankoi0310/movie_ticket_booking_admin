@@ -1,61 +1,120 @@
-class Seat {
-  String id;
-  String position;
+import 'package:intl/intl.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/model/general.dart';
+
+enum SeatType {
+  normal('normal'),
+  couple('couple');
+
+  final String value;
+
+  const SeatType(this.value);
+
+  factory SeatType.fromValue(String value) {
+    return SeatType.values.firstWhere((e) => e.value == value);
+  }
+}
+
+class Seat extends General {
+  String code;
+  bool isSeat;
   int columnIndex;
+  int col;
   int rowIndex;
-  String state;
-  String createdAt;
-  String updatedAt;
+  SeatType type;
+  Room room;
 
   Seat({
-    required this.id,
-    required this.position,
+    required int id,
+    required this.code,
+    required this.isSeat,
     required this.columnIndex,
+    required this.col,
     required this.rowIndex,
-    required this.state,
-    required this.createdAt,
-    required this.updatedAt,
-  });
-
-  Seat.withoutId({
-    required this.position,
-    required this.columnIndex,
-    required this.rowIndex,
-    required this.state,
-    required this.createdAt,
-    required this.updatedAt,
-  }) : id = '';
+    required this.type,
+    required this.room,
+    required GeneralState state,
+    required DateTime createdDate,
+    required DateTime modifiedDate,
+    required DateTime? deletedDate,
+  }) : super(
+          id: id,
+          state: state,
+          createdDate: createdDate,
+          modifiedDate: modifiedDate,
+          deletedDate: deletedDate,
+        );
 
   Seat.empty()
-      : id = '',
-        position = '',
+      : code = '',
+        isSeat = true,
         columnIndex = 0,
+        col = 0,
         rowIndex = 0,
-        state = '',
-        createdAt = '',
-        updatedAt = '';
+        type = SeatType.normal,
+        room = Room.empty(),
+        super.empty();
 
   factory Seat.fromJson(Map<String, dynamic> json) {
     return Seat(
       id: json['id'],
-      position: json['position'],
+      code: json['code'],
+      isSeat: json['isSeat'],
       columnIndex: json['columnIndex'],
+      col: json['col'],
       rowIndex: json['rowIndex'],
-      state: json['state'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
+      type: SeatType.fromValue(json['type']),
+      room: Room.fromJson(json['room']),
+      state: GeneralState.fromValue(json['state']),
+      createdDate: DateFormat('dd-MM-yyyy HH:mm:ss').parse(json['createdDate']),
+      modifiedDate:
+          DateFormat('dd-MM-yyyy HH:mm:ss').parse(json['modifiedDate']),
+      deletedDate: json['deletedDate'] != null
+          ? DateTime.parse(json['deletedDate'])
+          : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'position': position,
+      'code': code,
+      'isSeat': isSeat,
       'columnIndex': columnIndex,
+      'col': col,
       'rowIndex': rowIndex,
-      'state': state,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
+      'type': type.value,
+      'room': room.toJson(),
+      'state': state.value,
+      'createdDate': DateFormat('dd-MM-yyyy HH:mm:ss').format(createdDate),
+      'modifiedDate': DateFormat('dd-MM-yyyy HH:mm:ss').format(modifiedDate),
+      'deletedDate': deletedDate != null
+          ? DateFormat('dd-MM-yyyy HH:mm:ss').format(deletedDate!)
+          : null,
     };
+  }
+
+  factory Seat.initialize({
+    required String code,
+    required int columnIndex,
+    required int col,
+    required int rowIndex,
+    required SeatType type,
+    required Room room,
+  }) {
+    return Seat(
+      id: 0,
+      code: code,
+      isSeat: true,
+      columnIndex: columnIndex,
+      col: col,
+      rowIndex: rowIndex,
+      type: type,
+      room: room,
+      state: GeneralState.active,
+      createdDate: DateTime.now(),
+      modifiedDate: DateTime.now(),
+      deletedDate: null,
+    );
   }
 }

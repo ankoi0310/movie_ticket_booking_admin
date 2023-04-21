@@ -124,11 +124,11 @@ class Movie extends General {
       producer: json['producer'],
       releaseDate: DateFormat('dd-MM-yyyy').parse(json['releaseDate']),
       movieState:
-          MovieState.values.firstWhere((e) => e.value == json['movieState']),
+          MovieState.fromValue(json['movieState'] as String),
       movieFormats: (json['movieFormats'] as List)
           .map((e) => MovieFormat.fromValue(e))
           .toList(),
-      state: GeneralState.values.firstWhere((e) => e.value == json['state']),
+      state: GeneralState.fromValue(json['state']),
       createdDate: DateFormat('dd-MM-yyyy HH:mm:ss').parse(json['createdDate']),
       modifiedDate:
           DateFormat('dd-MM-yyyy HH:mm:ss').parse(json['modifiedDate']),
