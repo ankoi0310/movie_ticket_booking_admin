@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/product/product_screen.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/service/hive_storage_service.dart';
 
 enum RouteData {
@@ -12,9 +13,11 @@ enum RouteData {
   branch,
   room,
   showtime,
+  product,
   ticket,
   promotion,
   advertisement,
+  combo,
   statistic,
 }
 
@@ -62,8 +65,12 @@ class RouteHandler {
                 return const TicketScreen();
               case RouteData.promotion:
                 return const PromotionScreen();
+              case RouteData.combo:
+                return const ComboScreen();
               case RouteData.advertisement:
                 return const AdvertisementScreen();
+              case RouteData.product:
+                return const ProductScreen();
               case RouteData.statistic:
                 return const StatisticScreen();
               default:
@@ -115,6 +122,10 @@ class RouteHandler {
               return 'Vé phim';
             case RouteData.promotion:
               return 'Khuyến mãi';
+            case RouteData.product:
+              return 'Sản phẩm';
+            case RouteData.combo:
+              return 'Combo sản phẩm';
             case RouteData.advertisement:
               return 'Quảng cáo';
             case RouteData.statistic:

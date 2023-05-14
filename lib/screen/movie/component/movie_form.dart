@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/dto/genre/genre_search.dart';
 
 class MovieForm extends StatefulWidget {
   final void Function(Uint8List) submitImageVertical;
@@ -606,7 +607,7 @@ class _MovieFormState extends State<MovieForm> {
                     width: SizeConfig.screenWidth * 0.3 * 0.6,
                     height: 200,
                     child: FutureBuilder(
-                      future: genreProvider.getGenres(),
+                      future: genreProvider.getGenres(GenreSearch()),
                       builder: (context, snapshot) {
                         List<Genre> genres = [];
                         if (snapshot.hasData) {

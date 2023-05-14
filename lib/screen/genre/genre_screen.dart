@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/dto/genre/genre_search.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/screen/genre/component/genre_form.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/source/genre_data_source.dart';
 
@@ -19,7 +20,7 @@ class _GenreScreenState extends State<GenreScreen> {
     final genreProvider = Provider.of<GenreProvider>(context);
 
     return FutureBuilder(
-      future: genreProvider.getGenres(),
+      future: genreProvider.getGenres(GenreSearch()),
       builder: (context, snapshot) {
         return Column(
           children: [

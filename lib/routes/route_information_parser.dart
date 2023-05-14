@@ -31,6 +31,6 @@ class RoutesInformationParser extends RouteInformationParser<RoutePath> {
     if (configuration.isHomePage) return const RouteInformation(location: '/');
     if (configuration.isOtherPage) return RouteInformation(location: '/${configuration.pathName}');
 
-    return const RouteInformation(location: null);
+    return  RouteInformation(location: null);
   }
 }

@@ -15,101 +15,105 @@ class MovieDataTableSource extends DataTableSource {
     return DataRow2.byIndex(
       index: index,
       cells: <DataCell>[
-        DataCell(Text(movie.name)),
+        DataCell(Center(child: Text(movie.name))),
         DataCell(
-          ReadMoreText(
-            movie.storyLine,
-            trimLines: 2,
-            colorClickableText: Colors.blue,
-            trimMode: TrimMode.Line,
-            trimCollapsedText: 'Xem thêm',
-            trimExpandedText: 'Thu gọn',
-            moreStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          Center(
+            child: ReadMoreText(
+              movie.storyLine,
+              trimLines: 2,
+              colorClickableText: Colors.blue,
+              trimMode: TrimMode.Line,
+              trimCollapsedText: 'Xem thêm',
+              trimExpandedText: 'Thu gọn',
+              moreStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            ),
           ),
         ),
-        DataCell(Text(movie.imageVertical)),
-        DataCell(Text(movie.genres.map((e) => e.name).join(', ').toString())),
+        DataCell(Center(child: Text(movie.imageVertical))),
+        DataCell(Center(child: Text(movie.genres.map((e) => e.name).join(', ').toString()))),
         DataCell(
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              IconButton(
-                icon: const Icon(Icons.edit),
-                tooltip: 'Nhấn để chỉnh sửa',
-                onPressed: () {
-                  if (Responsive.isDesktop(context)) {
-                    final formKey = GlobalKey<FormState>();
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                IconButton(
+                  icon: const Icon(Icons.edit),
+                  tooltip: 'Nhấn để chỉnh sửa',
+                  onPressed: () {
+                    if (Responsive.isDesktop(context)) {
+                      final formKey = GlobalKey<FormState>();
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Chỉnh sửa phim'),
+                          content: Container(
+                            padding: const EdgeInsets.all(8),
+                            child: MovieForm(
+                              formKey: formKey,
+                              movie: movie,
+                              submitImageHorizontal: (image) {},
+                              submitImageVertical: (image) {},
+                              loading: false,
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Hủy'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                if (formKey.currentState!.validate()) {
+                                  formKey.currentState!.save();
+                                  provider.updateMovie(movie).then((value) async => {
+                                        Navigator.of(context).pop(),
+                                      });
+                                }
+                              },
+                              child: const Text('Lưu'),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete),
+                  tooltip: 'Nhấn để xóa',
+                  onPressed: () {
                     showDialog(
                       context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Chỉnh sửa phim'),
-                        content: Container(
-                          padding: const EdgeInsets.all(8),
-                          child: MovieForm(
-                            formKey: formKey,
-                            movie: movie,
-                            submitImageHorizontal: (image) {},
-                            submitImageVertical: (image) {},
-                            loading: false,
-                          ),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text('Hủy'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              if (formKey.currentState!.validate()) {
-                                formKey.currentState!.save();
-                                provider.updateMovie(movie).then((value) async => {
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Xoá phim'),
+                          content: const Text('Bạn có chắc chắn muốn xoá?'),
+                          actions: <Widget>[
+                            ElevatedButton(
+                              child: const Text('Hủy'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            ElevatedButton(
+                              child: Text('Xoá'),
+                              onPressed: () {
+                                provider.deleteMovie(movie.id!).then((value) async => {
                                       Navigator.of(context).pop(),
                                     });
-                              }
-                            },
-                            child: const Text('Lưu'),
-                          ),
-                        ],
-                      ),
+                              },
+                            ),
+                          ],
+                        );
+                      },
                     );
-                  }
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.delete),
-                tooltip: 'Nhấn để xóa',
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Xoá phim'),
-                        content: const Text('Bạn có chắc chắn muốn xoá?'),
-                        actions: <Widget>[
-                          ElevatedButton(
-                            child: const Text('Hủy'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          ElevatedButton(
-                            child: Text('Xoá'),
-                            onPressed: () {
-                              provider.deleteMovie(movie.id!).then((value) async => {
-                                    Navigator.of(context).pop(),
-                                  });
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              ),
-            ],
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ],

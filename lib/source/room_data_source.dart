@@ -15,77 +15,85 @@ class RoomDataTableSource extends DataTableSource {
     return DataRow2.byIndex(
       index: index,
       cells: <DataCell>[
-        DataCell(Text(room.id.toString())),
-        DataCell(Text(room.name)),
+        DataCell(Center(child: Text(room.id.toString()))),
+        DataCell(Center(child: Text(room.branch.name))),
+        DataCell(Center(child: Text(room.name))),
+        DataCell(Center(child: Text(room.totalSeat.toString()))),
+        DataCell(Center(child: Text(room.row.toString()))),
+        DataCell(Center(child: Text(room.col.toString()))),
+        DataCell(Center(child: Text(room.roomState.value))),
+        DataCell(Center(child: Text(room.type.value))),
         DataCell(
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              IconButton(
-                icon: const Icon(Icons.edit),
-                tooltip: 'Nhấn để chỉnh sửa',
-                onPressed: () {
-                  if (Responsive.isDesktop(context)) {
-                    final formKey = GlobalKey<FormState>();
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                IconButton(
+                  icon: const Icon(Icons.edit),
+                  tooltip: 'Nhấn để chỉnh sửa',
+                  onPressed: () {
+                    if (Responsive.isDesktop(context)) {
+                      final formKey = GlobalKey<FormState>();
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Chỉnh sửa thể loại'),
+                          content: Container(
+                            padding: const EdgeInsets.all(8),
+                            child: RoomForm(
+                              formKey: formKey,
+                              room: room,
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              child: const Text('Hủy'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            TextButton(
+                              child: const Text('Lưu'),
+                              onPressed: () {
+                                if (formKey.currentState!.validate()) {
+                                  formKey.currentState!.save();
+                                  provider.updateRoom(room).then((value) async => {Navigator.of(context).pop()});
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete),
+                  tooltip: 'Nhấn để xóa',
+                  onPressed: () {
                     showDialog(
                       context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Chỉnh sửa thể loại'),
-                        content: Container(
-                          padding: const EdgeInsets.all(8),
-                          child: RoomForm(
-                            formKey: formKey,
-                            room: room,
-                          ),
-                        ),
-                        actions: [
-                          TextButton(
-                            child: const Text('Hủy'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          TextButton(
-                            child: const Text('Lưu'),
-                            onPressed: () {
-                              if (formKey.currentState!.validate()) {
-                                formKey.currentState!.save();
-                                provider.updateRoom(room).then((value) async => {Navigator.of(context).pop()});
-                              }
-                            },
-                          ),
-                        ],
-                      ),
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Xoá thể loại'),
+                          content: const Text('Bạn có chắc chắn muốn xoá?'),
+                          actions: <Widget>[
+                            ElevatedButton(child: const Text('Hủy'), onPressed: () => Navigator.of(context).pop()),
+                            ElevatedButton(
+                              child: const Text('Xoá'),
+                              onPressed: () {
+                                provider.deleteRoom(room.id).then((value) async => Navigator.of(context).pop());
+                              },
+                            ),
+                          ],
+                        );
+                      },
                     );
-                  }
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.delete),
-                tooltip: 'Nhấn để xóa',
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Xoá thể loại'),
-                        content: const Text('Bạn có chắc chắn muốn xoá?'),
-                        actions: <Widget>[
-                          ElevatedButton(child: const Text('Hủy'), onPressed: () => Navigator.of(context).pop()),
-                          ElevatedButton(
-                            child: const Text('Xoá'),
-                            onPressed: () {
-                              provider.deleteRoom(room.id as String).then((value) async => Navigator.of(context).pop());
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              ),
-            ],
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ],

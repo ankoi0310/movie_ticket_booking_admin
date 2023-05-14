@@ -2,9 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:movie_ticket_booking_admin_flutter_nlu/constant/api_constant.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/dto/genre/genre_search.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/handler/http_response.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/provider/api_provider.dart';
 
 class GenreProvider extends ChangeNotifier {
+  final apiProvider = ApiProvider.instance;
   Genre? _genre;
 
   Genre? get genre => _genre;
@@ -13,110 +18,66 @@ class GenreProvider extends ChangeNotifier {
 
   List<Genre> get genres => _genres;
 
-  Future<List<Genre>> getGenres() async {
-    try {
-      final response = await http.post(
-          Uri.parse('http://localhost:8081/api/v1/genre/search'),
-          headers: {
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-          body: jsonEncode({})
-
-      );
-      // decode response body to json with utf8
-      Map jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
-
-      if (response.statusCode == 200) {
-        final data = jsonResponse['data'] as List;
-        _genres = data.map((e) => Genre.fromJson(e)).toList();
-      }
-
-      notifyListeners();
-      return _genres;
-    } catch (_) {
-      print('error: $_');
-      rethrow;
-    }
-  }
-
-  Future<Genre?> getGenreById(String id) async {
-    try {
-      final response = await http.get(Uri.parse('http://localhost:8081/api/genre/$id'));
-
-      Map jsonResponse = jsonDecode(response.body);
-
-      if (response.statusCode == 200) {
-        _genre = Genre.fromJson(jsonResponse['data']);
-      }
-
-      notifyListeners();
-      return _genre;
-    } catch (_) {
-      rethrow;
-    }
-  }
-
-  Future<Genre?> createGenre(Genre genre) async {
-    try {
-      final response = await http.post(
-        Uri.parse('http://localhost:3000/api/genre'),
+  Future<HttpResponse> getGenres(GenreSearch search) async {
+    HttpResponse response = await apiProvider.post(Uri.parse('$baseUrl/genre/search'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode({
-          'name': genre.name,
-        }),
-      );
+        body: jsonEncode(search.toJson()));
 
-      Map jsonResponse = jsonDecode(response.body);
+    try {
+      _genres = response.data.map<Genre>((e) => Genre.fromJson(e)).toList();
+    } catch (e) {}
 
-      if (response.statusCode == 200) {
-        _genre = Genre.fromJson(jsonResponse['data']);
-      }
-
-      notifyListeners();
-      return _genre;
-    } catch (_) {
-      rethrow;
-    }
+    return response;
   }
 
-  Future<Genre?> updateGenre(Genre genre) async {
+  Future<HttpResponse> getGenreById(int id) async {
+    HttpResponse response = await apiProvider.get(
+      Uri.parse('$baseUrl/genre/$id'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
     try {
-      final response = await http.put(
-        Uri.parse('http://localhost:3000/api/genre/${genre.id}'),
+      _genre = Genre.fromJson(response.data);
+    } catch (e) {}
+
+    return response;
+  }
+
+  Future<HttpResponse> createGenre(Genre genre) async {
+    HttpResponse response = await apiProvider.post(Uri.parse('$baseUrl/genre/create'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode({
-          'name': genre.name,
-        }),
-      );
+        body: jsonEncode({"genre": genre.toJson()}));
 
-      Map jsonResponse = jsonDecode(response.body);
-
-      if (response.statusCode == 200) {
-        _genre = Genre.fromJson(jsonResponse['data']);
-      }
-
-      notifyListeners();
-      return _genre;
-    } catch (_) {
-      rethrow;
-    }
+    notifyListeners();
+    return response;
   }
 
-  Future<void> deleteGenre(int id) async {
-    try {
-      final response = await http.delete(Uri.parse('http://localhost:3000/api/genre/$id'));
+  Future<HttpResponse> updateGenre(Genre genre) async {
+    HttpResponse response = await apiProvider.put(Uri.parse('$baseUrl/genre/update'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(genre.toJson()));
 
-      if (response.statusCode == 200) {
-        _genres.removeWhere((element) => element.id == id);
-      }
+    notifyListeners();
+    return response;
+  }
 
-      notifyListeners();
-    } catch (_) {
-      rethrow;
-    }
+  Future<HttpResponse> deleteGenre(int id) async {
+    HttpResponse response = await apiProvider.delete(
+      Uri.parse('$baseUrl/genre/delete/$id'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    notifyListeners();
+    return response;
   }
 }

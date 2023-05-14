@@ -44,6 +44,16 @@ final List<MenuItem> sideBarMenuItems = [
     route: RouteData.room,
   ),
   MenuItem(
+    icon: '/icons/product.svg',
+    title: 'Sản phẩm',
+    route: RouteData.product,
+  ),
+  MenuItem(
+    icon: '/icons/product.svg',
+    title: 'Combo sản phẩm',
+    route: RouteData.combo,
+  ),
+  MenuItem(
     icon: '/icons/showtime.svg',
     title: 'Lịch chiếu',
     route: RouteData.showtime,

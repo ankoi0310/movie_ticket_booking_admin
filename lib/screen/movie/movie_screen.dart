@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/component/loading.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/dto/movie/movie_search.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/provider/component/loading_provider.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/screen/exception/bad_request_exception.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/screen/movie/component/movie_form.dart';
@@ -31,8 +32,6 @@ class _MovieScreenState extends State<MovieScreen> {
 
   Uint8List? dataVerticalBytes;
   Uint8List? dataHorizontalBytes;
-
-  UploadTask? uploadTask;
 
   bool isCreatingMovie = false;
 
@@ -89,7 +88,7 @@ class _MovieScreenState extends State<MovieScreen> {
     }
 
     return FutureBuilder(
-      future: movieProvider.getMovies(),
+      future: movieProvider.getMovies(MovieSearch.empty()),
       builder: (context, snapshot) {
         return Column(
           children: [

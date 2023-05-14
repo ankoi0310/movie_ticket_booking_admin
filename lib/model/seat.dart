@@ -3,8 +3,8 @@ import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/model/general.dart';
 
 enum SeatType {
-  normal('normal'),
-  couple('couple');
+  normal('NORMAL'),
+  couple('COUPLE');
 
   final String value;
 
@@ -21,8 +21,9 @@ class Seat extends General {
   int columnIndex;
   int col;
   int rowIndex;
-  SeatType type;
-  Room room;
+  int row;
+  SeatType seatType;
+  Room? room;
 
   Seat({
     required int id,
@@ -31,7 +32,8 @@ class Seat extends General {
     required this.columnIndex,
     required this.col,
     required this.rowIndex,
-    required this.type,
+    required this.row,
+    required this.seatType,
     required this.room,
     required GeneralState state,
     required DateTime createdDate,
@@ -47,11 +49,12 @@ class Seat extends General {
 
   Seat.empty()
       : code = '',
-        isSeat = true,
+        isSeat = false,
         columnIndex = 0,
         col = 0,
         rowIndex = 0,
-        type = SeatType.normal,
+        row = 0,
+        seatType = SeatType.normal,
         room = Room.empty(),
         super.empty();
 
@@ -63,8 +66,9 @@ class Seat extends General {
       columnIndex: json['columnIndex'],
       col: json['col'],
       rowIndex: json['rowIndex'],
-      type: SeatType.fromValue(json['type']),
-      room: Room.fromJson(json['room']),
+      row: json['row'],
+      seatType: SeatType.fromValue(json['seatType']),
+      room: json['room'] == null ? null : Room.fromJson(json['room']),
       state: GeneralState.fromValue(json['state']),
       createdDate: DateFormat('dd-MM-yyyy HH:mm:ss').parse(json['createdDate']),
       modifiedDate:
@@ -83,8 +87,9 @@ class Seat extends General {
       'columnIndex': columnIndex,
       'col': col,
       'rowIndex': rowIndex,
-      'type': type.value,
-      'room': room.toJson(),
+      'row': row,
+      'seatType': seatType.value,
+      'room': room == null ? null : room!.toJson(),
       'state': state.value,
       'createdDate': DateFormat('dd-MM-yyyy HH:mm:ss').format(createdDate),
       'modifiedDate': DateFormat('dd-MM-yyyy HH:mm:ss').format(modifiedDate),
@@ -99,8 +104,8 @@ class Seat extends General {
     required int columnIndex,
     required int col,
     required int rowIndex,
+    required int row,
     required SeatType type,
-    required Room room,
   }) {
     return Seat(
       id: 0,
@@ -109,8 +114,9 @@ class Seat extends General {
       columnIndex: columnIndex,
       col: col,
       rowIndex: rowIndex,
-      type: type,
-      room: room,
+      row: row,
+      seatType: type,
+      room: null,
       state: GeneralState.active,
       createdDate: DateTime.now(),
       modifiedDate: DateTime.now(),

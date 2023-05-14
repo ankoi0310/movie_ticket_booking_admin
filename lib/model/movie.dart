@@ -104,6 +104,14 @@ class Movie extends General {
         movieFormats = [],
         super.empty();
 
+  @override
+  bool operator ==(other) {
+    return (other is Movie) && other.id == id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
+
   factory Movie.fromJson(Map<String, dynamic> json) {
     return Movie(
       id: json['id'],
