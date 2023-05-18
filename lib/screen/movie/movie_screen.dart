@@ -117,7 +117,6 @@ class _MovieScreenState extends State<MovieScreen> {
                                       submitImageVertical: submitImageVertical,
                                       submitImageHorizontal:
                                           submitImageHorizontal,
-                                      loading: isCreatingMovie,
                                     ),
                                   ),
                                 ),
@@ -148,43 +147,90 @@ class _MovieScreenState extends State<MovieScreen> {
                 ],
               ),
             ),
-            SizedBox(
-              width: SizeConfig.screenWidth,
-              height: SizeConfig.screenHeight * 0.7,
-              child: PaginatedDataTable2(
-                empty: const Center(child: Text('Không có dữ liệu')),
-                border: TableBorder.all(color: Colors.grey, width: 1),
-                rowsPerPage: DatatableConfig.defaultRowsPerPage,
-                fit: FlexFit.tight,
-                onPageChanged: (index) {
-                  setState(() {
-                    currentPageIndex = index;
-                  });
-                },
-                source: MovieDataTableSource(
-                    context: context, provider: movieProvider),
-                columns: const [
-                  DataColumn2(
-                    label: Center(child: Text('Tên phim')),
-                    size: ColumnSize.L,
-                  ),
-                  DataColumn2(
-                    label: Center(child: Text('Mô tả')),
-                    size: ColumnSize.L,
-                  ),
-                  DataColumn2(
-                    label: Center(child: Text('Ảnh nền')),
-                    size: ColumnSize.S,
-                  ),
-                  DataColumn2(
-                    label: Center(child: Text('Thể loại')),
-                    size: ColumnSize.S,
-                  ),
-                  DataColumn2(
-                    label: Center(child: Text('')),
-                    size: ColumnSize.S,
-                  ),
-                ],
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: SizedBox(
+                width: SizeConfig.screenWidth * 1.6,
+                height: SizeConfig.screenHeight * 0.7,
+                child: PaginatedDataTable2(
+                  empty: const Center(child: Text('Không có dữ liệu')),
+                  border: TableBorder.all(color: Colors.grey, width: 1),
+                  rowsPerPage: DatatableConfig.defaultRowsPerPage,
+                  fit: FlexFit.tight,
+                  onPageChanged: (index) {
+                    setState(() {
+                      currentPageIndex = index;
+                    });
+                  },
+                  source: MovieDataTableSource(
+                      context: context, provider: movieProvider),
+                  columns: const [
+                    DataColumn2(
+                      label: Center(child: Text('ID')),
+                      size: ColumnSize.S,
+                      fixedWidth: 60
+                    ),
+                    DataColumn2(
+                      label: Center(child: Text('Tên phim')),
+                      size: ColumnSize.L,
+                        fixedWidth: 310
+                    ),
+                    DataColumn2(
+                      label: Center(child: Text('Thể loại')),
+                      size: ColumnSize.L,
+                    ),
+                    DataColumn2(
+                      label: Center(child: Text('Đánh giá')),
+                      size: ColumnSize.M,
+                        fixedWidth: 150
+                    ),
+                    DataColumn2(
+                      label: Center(child: Text('Thời lượng')),
+                      size: ColumnSize.M,
+                        fixedWidth: 150
+                    ),
+                    DataColumn2(
+                      label: Center(child: Text('Đạo diễn')),
+                      size: ColumnSize.M,
+                        fixedWidth: 160
+                    ),
+                    DataColumn2(
+                      label: Center(child: Text('Nhà sản xuất')),
+                      size: ColumnSize.M,
+                        fixedWidth: 160
+                    ),
+                    DataColumn2(
+                      label: Center(child: Text('Ngôn ngữ')),
+                      size: ColumnSize.M,
+                        fixedWidth: 160
+                    ),
+                    DataColumn2(
+                      label: Center(child: Text('Phụ đề')),
+                      size: ColumnSize.M,
+                        fixedWidth: 160
+                    ),
+                    DataColumn2(
+                      label: Center(child: Text('Quốc gia')),
+                      size: ColumnSize.M,
+                        fixedWidth: 160
+                    ),
+                    DataColumn2(
+                      label: Center(child: Text('Trạng thái')),
+                      size: ColumnSize.M,
+                        fixedWidth: 180
+                    ),
+                    DataColumn2(
+                      label: Center(child: Text('Ngày phát hành')),
+                      size: ColumnSize.L,
+                        fixedWidth: 160
+                    ),
+                    DataColumn2(
+                      label: Center(child: Text('')),
+                      size: ColumnSize.S,
+                        fixedWidth: 110
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

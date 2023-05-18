@@ -33,88 +33,80 @@ class MovieProvider with ChangeNotifier {
 
     try {
       _movies = response.data.map<Movie>((e) => Movie.fromJson(e)).toList();
-    } catch (e) {
-    }
+    } catch (e) {}
 
     return response;
   }
 
   Future<HttpResponse> getMovieById(int id) async {
-    HttpResponse response = await apiProvider.post(
-        Uri.parse('$baseUrl/movie/$id'),
+    HttpResponse response = await apiProvider.post(Uri.parse('$baseUrl/movie/$id'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode(id)
-    );
+        body: jsonEncode(id));
 
     _movie = Movie.fromJson(response.data);
 
     return response;
   }
 
-  Future<Movie?> createMovie(Movie movie, Uint8List imageVerticalBytes, Uint8List imageHorizontalBytes) async {
+  Future<HttpResponse?> createMovie(Movie movie, Uint8List imageVerticalBytes, Uint8List imageHorizontalBytes) async {
+    movie.imageVertical = '/images/${StringUtil.convert(movie.name)}_vertical.jpg';
+    movie.imageHorizontal = '/images/${StringUtil.convert(movie.name)}_horizontal.jpg';
+    HttpResponse response = await apiProvider.post(
+      Uri.parse('$baseUrl/movie/create'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({
+        "movie": movie.toJson(),
+      }),
+    );
+
+    if (response.success) {
+      await firebaseStorageService.uploadImage(movie.imageVertical, imageVerticalBytes);
+      await firebaseStorageService.uploadImage(movie.imageHorizontal, imageHorizontalBytes);
+
+      notifyListeners();
+    } else {
+      throw BadRequestException(response.message);
+    }
+  }
+
+  Future<HttpResponse?> updateMovie(Movie movie, Uint8List imageVerticalBytes, Uint8List imageHorizontalBytes) async {
     movie.imageVertical = '/images/${StringUtil.convert(movie.name)}_vertical.jpg';
     movie.imageHorizontal = '/images/${StringUtil.convert(movie.name)}_horizontal.jpg';
 
-    try {
-      final response = await http.post(
-        Uri.parse('http://localhost:8081/api/v1/movie/create'),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode({
-          "movie": movie.toJson(),
-        }),
-      );
+    HttpResponse response = await apiProvider.put(
+      Uri.parse('$baseUrl/movie/update'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(movie.toJson()),
+    );
 
-      Map httpResponse = jsonDecode(utf8.decode(response.bodyBytes));
-      if (response.statusCode == 200) {
-        firebaseStorageService.uploadImage(movie.imageVertical, imageVerticalBytes);
-        firebaseStorageService.uploadImage(movie.imageHorizontal, imageHorizontalBytes);
+    if (response.success) {
+      await firebaseStorageService.uploadImage(movie.imageVertical, imageVerticalBytes);
+      await firebaseStorageService.uploadImage(movie.imageHorizontal, imageHorizontalBytes);
 
-        _movie = Movie.fromJson(httpResponse['data']);
-      } else if (response.statusCode == 400) {
-        throw BadRequestException(httpResponse['message']);
-      }
-      return _movie;
-    } catch (_) {
-      print('error: $_');
-      rethrow;
+      notifyListeners();
+    } else {
+      throw BadRequestException(response.message);
     }
   }
 
-  Future<Movie?> updateMovie(Movie movie) async {
-    try {
-      final response = await http.put(
-        Uri.parse('http://localhost:3000/api/movie/$movie.id'),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode({}),
-      );
+  Future<HttpResponse?> deleteMovie(int id) async {
+    HttpResponse response = await apiProvider.delete(
+      Uri.parse('$baseUrl/movie/delete/$id'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
 
-      Map jsonResponse = jsonDecode(response.body);
-
-      if (response.statusCode == 200) {
-        _movie = Movie.fromJson(jsonResponse['data']);
-      }
-
-      return _movie;
-    } catch (_) {
-      rethrow;
-    }
-  }
-
-  Future<void> deleteMovie(int id) async {
-    try {
-      final response = await http.delete(Uri.parse('http://localhost:3000/api/movie/$id'));
-
-      if (response.statusCode == 200) {
-        _movies.removeWhere((element) => element.id == id);
-      }
-    } catch (_) {
-      rethrow;
+    if (response.success) {
+      notifyListeners();
+    } else {
+      throw BadRequestException(response.message);
     }
   }
 }

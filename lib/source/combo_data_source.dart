@@ -3,89 +3,69 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/component/loading.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/handler/http_response.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/provider/combo_provider.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/provider/component/loading_provider.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/screen/exception/bad_request_exception.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/screen/movie/component/movie_form.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/combo/component/combo_form.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/service/firebase_storage_service.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/util/popup_util.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/util/string_util.dart';
 
-class MovieDataTableSource extends DataTableSource {
+class ComboDataSource extends DataTableSource {
   final BuildContext context;
-  final MovieProvider provider;
-  final LoadingProvider loadingProvider;
-  MovieDataTableSource({required this.context, required this.provider}): loadingProvider = Provider.of<LoadingProvider>(context);
+  final ComboProvider provider;
+  final loadingProvider;
 
-  Uint8List? imageVerticalBytes;
-  Uint8List? imageHorizontalBytes;
+  ComboDataSource({required this.context, required this.provider}) : loadingProvider = Provider.of<LoadingProvider>(context);
 
-  Uint8List? dataVerticalBytes;
-  Uint8List? dataHorizontalBytes;
+  final firebaseStorageService = FirebaseStorageService();
 
-  void submitImageVertical(Uint8List? imageVBytes) {
-    imageVerticalBytes = imageVBytes;
+  Uint8List? image;
+
+  void submitImage(Uint8List? imageHBytes) {
+    image = imageHBytes;
   }
 
-  void submitImageHorizontal(Uint8List? imageHBytes) {
-    imageHorizontalBytes = imageHBytes;
-  }
-  Future<void> updateMovie(Movie newMovie, BuildContext context) async {
-      loadingProvider.setLoading(true);
-    await provider
-        .updateMovie(newMovie, imageVerticalBytes!, imageHorizontalBytes!)
-        .then((value) async {
-        loadingProvider.setLoading(false);
+  Future<void> updateCombo(Combo newCombo) async {
+    loadingProvider.setLoading(true);
+    newCombo.image = '/images/${StringUtil.convert(newCombo.name)}.jpg';
+
+    HttpResponse response = await provider.updateCombo(newCombo);
+
+    if (response.success) {
+      await firebaseStorageService.uploadImage(newCombo.image, image!);
+
+      loadingProvider.setLoading(false);
+
       PopupUtil.showSuccess(
-          context: context,
-          message: 'Cập nhật phim thành công',
-          width: SizeConfig.screenWidth * 0.6 * 0.6,
-          onPress: () {
-            Navigator.of(context).pop();
-          });
-    }).catchError((error) {
-        loadingProvider.setLoading(false);
-
+        context: context,
+        message: 'Cập nhật sản phẩm thành công',
+        width: SizeConfig.screenWidth * 0.6 * 0.6,
+        onPress: () {
+          Navigator.of(context).pop();
+        },
+      );
+    } else {
+      loadingProvider.setLoading(false);
       PopupUtil.showError(
         context: context,
-        message: error is BadRequestException
-            ? error.message
-            : 'Lỗi không xác định',
+        message: response.message,
         width: SizeConfig.screenWidth * 0.6 * 0.6,
       );
-    });
+    }
   }
-
 
   @override
   DataRow2 getRow(int index) {
     assert(index >= 0);
-    final Movie movie = provider.movies[index];
+    final Combo combo = provider.combos[index];
     return DataRow2.byIndex(
       index: index,
       cells: <DataCell>[
-        DataCell(Center(child: Text(movie.id.toString()))),
-        DataCell(Center(child: Text(movie.name))),
-        DataCell(Center(child: Text(movie.genres.map((e) => e.name).join(', ').toString()))),
-        DataCell(Center(child: Text(movie.rating.toString()))),
-        DataCell(Center(child: Text(movie.duration.toString()))),
-        DataCell(Center(child: Text(movie.director))),
-        DataCell(Center(child: Text(movie.producer))),
-        DataCell(Center(child: Text(movie.language))),
-        DataCell(Center(child: Text(movie.subtitle))),
-        DataCell(Center(child: Text(movie.country))),
-        DataCell(Center(child: Text(movie.movieState.value))),
-        DataCell(Center(child: Text(DateFormat('dd/MM/yyyy').format(movie.releaseDate)))),
-        // DataCell(
-        //   Center(
-        //     child: ReadMoreText(
-        //       movie.storyLine,
-        //       trimLines: 2,
-        //       colorClickableText: Colors.blue,
-        //       trimMode: TrimMode.Line,
-        //       trimCollapsedText: 'Xem thêm',
-        //       trimExpandedText: 'Thu gọn',
-        //       moreStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-        //     ),
-        //   ),
-        // ),
+        DataCell(Center(child: Text(combo.id.toString()))),
+        DataCell(Center(child: Text(combo.name))),
+        DataCell(Center(child: Text(combo.price.toString()))),
+        DataCell(Center(child: Text(combo.comboItems.map((e) => "${e.quantity}x${e.product!.name}").join(', ').toString()))),
         DataCell(
           Center(
             child: Row(
@@ -108,13 +88,12 @@ class MovieDataTableSource extends DataTableSource {
                                   title: const Text('Chỉnh sửa phim'),
                                   content: Container(
                                     padding: const EdgeInsets.all(8),
-                                    width: SizeConfig.screenWidth * 0.6,
+                                    width: SizeConfig.screenWidth * 0.4,
                                     child: SingleChildScrollView(
-                                      child: MovieForm(
+                                      child: ComboForm(
                                         formKey: formKey,
-                                        movie: movie,
-                                        submitImageHorizontal: submitImageHorizontal,
-                                        submitImageVertical: submitImageVertical,
+                                        combo: combo,
+                                        submitImage: submitImage,
                                       ),
                                     ),
                                   ),
@@ -126,17 +105,20 @@ class MovieDataTableSource extends DataTableSource {
                                       child: const Text('Hủy'),
                                     ),
                                     TextButton(
-                                      onPressed: () async{
+                                      onPressed: () async {
                                         if (formKey.currentState!.validate()) {
                                           formKey.currentState!.save();
-                                          await updateMovie(movie, context);
+                                          await updateCombo(combo);
+                                          //  provider.updateCombo(combo).then((value) async => {
+                                          //        Navigator.of(context).pop(),
+                                          //      });
                                         }
                                       },
                                       child: const Text('Lưu'),
                                     ),
                                   ],
                                 ),
-                                loadingProvider.loading ? const Loading() : Container(),
+                                loadingProvider.loading ? const Loading(): Container(),
                               ],
                             );
                           }
@@ -165,7 +147,7 @@ class MovieDataTableSource extends DataTableSource {
                             ElevatedButton(
                               child: Text('Xoá'),
                               onPressed: () {
-                                provider.deleteMovie(movie.id).then((value) async => {
+                                provider.deleteCombo(combo.id).then((value) async => {
                                       Navigator.of(context).pop(),
                                     });
                               },
@@ -185,7 +167,7 @@ class MovieDataTableSource extends DataTableSource {
   }
 
   @override
-  int get rowCount => provider.movies.length;
+  int get rowCount => provider.combos.length;
 
   @override
   bool get isRowCountApproximate => false;

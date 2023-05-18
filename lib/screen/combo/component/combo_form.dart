@@ -3,9 +3,11 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/component/hover_builder.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/model/combo.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/model/combo_item.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/service/firebase_storage_service.dart';
 import 'package:quantity_input/quantity_input.dart';
 
 class ComboForm extends StatefulWidget {
@@ -20,15 +22,18 @@ class ComboForm extends StatefulWidget {
 }
 
 class _ComboFormState extends State<ComboForm> {
+  final firebaseStorageService = FirebaseStorageService();
   XFile? image;
-  Uint8List imageBytes = Uint8List(8);
+  Uint8List imageBytes = Uint8List(0);
   UploadTask? uploadTask;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    widget.combo.comboItems = [ComboItem.empty()];
+    if(widget.combo.comboItems.isEmpty) {
+      widget.combo.comboItems = [ComboItem.empty()];
+    }
   }
 
 
@@ -135,13 +140,71 @@ class _ComboFormState extends State<ComboForm> {
               ),
             ),
             Container(),
-            SizedBox(
+            widget.combo.id != 0 ? FutureBuilder(
+                future: firebaseStorageService.getImages([widget.combo.image]),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    if(image == null) {
+                      imageBytes = firebaseStorageService.mapImage[widget.combo.image]!;
+                      widget.submitImage(imageBytes);
+                    }
+                    return SizedBox(
+                        width: SizeConfig.screenWidth * 0.6,
+                        child: Column(
+                          children: [
+                            HoverBuilder(builder: (isHovering) {
+                              return Container(
+                                height: 250,
+                                decoration: imageBytes.isNotEmpty
+                                    ? BoxDecoration(
+                                  image: DecorationImage(
+                                    image: Image.memory(imageBytes).image,
+                                    fit: BoxFit.contain,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                )
+                                    : null,
+                                child: imageBytes.isEmpty
+                                    ? dottedBorder(pickImage: _pickImage, text: "Chọn ảnh")
+                                    : (isHovering
+                                    ? InkWell(
+                                  onTap: () async {
+                                    await _pickImage();
+                                    setState(() {
+                                      // isUpdateImageVertical = true;
+                                    });
+                                  },
+                                  child: Container(
+                                    color: Colors.black.withOpacity(0.5),
+                                    child: Center(
+                                      child: Text(
+                                        "Chọn ảnh khác",
+                                        style: TextStyle(color: Colors.white, fontSize: 20),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                    : Container()),
+                              );
+                            }),
+                          ],
+                        ));
+                  }
+                  return Container(
+                      width: SizeConfig.screenWidth * 0.6,
+                      height: 300,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.black)
+                      ),
+                      child: Center(child: CircularProgressIndicator()));
+                }):SizedBox(
                 width: SizeConfig.screenWidth * 0.6,
                 child: Column(
                   children: [
                     Container(
                       height: 250,
-                      decoration: image != null
+                      decoration: imageBytes.isNotEmpty
                           ? BoxDecoration(
                               image: DecorationImage(
                                 image: Image.memory(imageBytes).image,
@@ -150,7 +213,7 @@ class _ComboFormState extends State<ComboForm> {
                               borderRadius: BorderRadius.circular(10),
                             )
                           : null,
-                      child: image == null ? dottedBorder(pickImage: _pickImage, text: "Chọn ảnh combo") : Container(),
+                      child: imageBytes.isEmpty ? dottedBorder(pickImage: _pickImage, text: "Chọn ảnh combo") : Container(),
                     ),
                   ],
                 )),

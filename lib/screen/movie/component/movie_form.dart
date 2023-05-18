@@ -5,13 +5,14 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/component/hover_builder.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/dto/genre/genre_search.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/service/firebase_storage_service.dart';
 
 class MovieForm extends StatefulWidget {
   final void Function(Uint8List) submitImageVertical;
   final void Function(Uint8List) submitImageHorizontal;
-  final bool loading;
 
   const MovieForm({
     super.key,
@@ -19,7 +20,6 @@ class MovieForm extends StatefulWidget {
     required this.movie,
     required this.submitImageVertical,
     required this.submitImageHorizontal,
-    required this.loading,
   });
 
   final GlobalKey<FormState> formKey;
@@ -31,12 +31,10 @@ class MovieForm extends StatefulWidget {
 
 class _MovieFormState extends State<MovieForm> {
   XFile? imageVertical;
-  Uint8List imageVerticalBytes = Uint8List(8);
+  Uint8List imageVerticalBytes = Uint8List(0);
 
   XFile? imageHorizontal;
-  Uint8List imageHorizontalBytes = Uint8List(8);
-
-  Map<int, Widget> actorsField = {};
+  Uint8List imageHorizontalBytes = Uint8List(0);
 
   String changeFormat(String value) {
     switch (value) {
@@ -94,17 +92,22 @@ class _MovieFormState extends State<MovieForm> {
   UploadTask? uploadTask;
 
   Future<void> _pickImageVertical() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      var f = await pickedFile.readAsBytes();
-      setState(() {
-        imageVerticalBytes = f;
-        imageVertical = pickedFile;
-        widget.submitImageVertical(imageVerticalBytes);
-      });
-    } else {
-      print('No image selected.');
+    try {
+      final picker = ImagePicker();
+
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        var f = await pickedFile.readAsBytes();
+        setState(() {
+          imageVerticalBytes = f;
+          imageVertical = pickedFile;
+          widget.submitImageVertical(imageVerticalBytes);
+        });
+      } else {
+        print('No image selected.');
+      }
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -127,43 +130,19 @@ class _MovieFormState extends State<MovieForm> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    if(actorsField.isEmpty) {
-      actorsField.putIfAbsent(0, () => buildTextFormFieldActor("Tên diễn viên", 0));
+    if (widget.movie.id != 0) {
+    } else {
+      widget.movie.actors.add("");
     }
-
-  }
-
-  Widget buildTextFormFieldActor(String label, int index) {
-    return TextFormField(
-      initialValue: actorsField[index] != null ? widget.movie.actors[index] : null,
-      decoration: InputDecoration(
-        labelText: label,
-      ),
-      validator: (value) {
-        if (value!.isEmpty) {
-          return '$label không được để trống';
-        }
-        return null;
-      },
-      onChanged: (value) {
-        if (widget.movie.actors.length > index) {
-          widget.movie.actors[index] = value;
-        } else {
-          widget.movie.actors.add(value);
-        }
-      },
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    final datePickerController = TextEditingController(
-        text: widget.movie.releaseDate != null
-            ? DateFormat('dd-MM-yyyy').format(widget.movie.releaseDate!)
-            : '');
+    final datePickerController = TextEditingController(text: DateFormat('dd-MM-yyyy').format(widget.movie.releaseDate));
 
     final genreProvider = Provider.of<GenreProvider>(context, listen: false);
+    final firebaseStorageService = FirebaseStorageService();
 
     return Stack(
       children: [
@@ -180,10 +159,28 @@ class _MovieFormState extends State<MovieForm> {
                         spacing: 10,
                         runSpacing: 10,
                         children: List.generate(
-                          actorsField.length,
+                          widget.movie.actors.length,
                           (index) => Container(
                             width: SizeConfig.screenWidth * 0.25 * 0.6,
-                            child: actorsField[index],
+                            child: TextFormField(
+                              initialValue: widget.movie.actors[index],
+                              decoration: InputDecoration(
+                                labelText: "Tên diễn viên",
+                              ),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Tên diễn viên không được để trống';
+                                }
+                                return null;
+                              },
+                              onChanged: (value) {
+                                if (widget.movie.actors.length > index) {
+                                  widget.movie.actors[index] = value;
+                                } else {
+                                  widget.movie.actors.add(value);
+                                }
+                              },
+                            ),
                           ),
                         ),
                       )),
@@ -200,7 +197,7 @@ class _MovieFormState extends State<MovieForm> {
                           ),
                           onPressed: () {
                             setState(() {
-                              actorsField.putIfAbsent(actorsField.length, () => buildTextFormFieldActor("Tên diễn viên", actorsField.length));
+                              widget.movie.actors.add("");
                             });
                           },
                         )),
@@ -216,7 +213,7 @@ class _MovieFormState extends State<MovieForm> {
                           ),
                           onPressed: () {
                             setState(() {
-                              if (actorsField.length > 1) actorsField.remove(actorsField.length - 1);
+                              if (widget.movie.actors.length > 1) widget.movie.actors.remove(widget.movie.actors.last);
                             });
                           },
                         )),
@@ -429,8 +426,7 @@ class _MovieFormState extends State<MovieForm> {
                               value: widget.movie.movieState.value,
                               onChanged: (value) {
                                 setState(() {
-                                  widget.movie.movieState =
-                                      MovieState.fromValue(value!);
+                                  widget.movie.movieState = MovieState.fromValue(value!);
                                 });
                               },
                               buttonStyleData: ButtonStyleData(
@@ -453,8 +449,7 @@ class _MovieFormState extends State<MovieForm> {
                                 iconSize: (28),
                                 iconEnabledColor: Colors.black,
                                 iconDisabledColor: Colors.grey,
-                                openMenuIcon:
-                                    Icon(Icons.keyboard_arrow_down_rounded),
+                                openMenuIcon: Icon(Icons.keyboard_arrow_down_rounded),
                               ),
                               dropdownStyleData: DropdownStyleData(
                                 elevation: 1,
@@ -463,12 +458,9 @@ class _MovieFormState extends State<MovieForm> {
                                 scrollbarTheme: ScrollbarThemeData(
                                   radius: const Radius.circular(10),
                                   thickness: MaterialStateProperty.all(5),
-                                  thumbColor:
-                                      MaterialStateProperty.all(Colors.grey),
-                                  trackColor:
-                                      MaterialStateProperty.all(Colors.grey),
-                                  thumbVisibility:
-                                      MaterialStateProperty.all(true),
+                                  thumbColor: MaterialStateProperty.all(Colors.grey),
+                                  trackColor: MaterialStateProperty.all(Colors.grey),
+                                  thumbVisibility: MaterialStateProperty.all(true),
                                 ),
                               ),
                               menuItemStyleData: MenuItemStyleData(
@@ -529,8 +521,7 @@ class _MovieFormState extends State<MovieForm> {
                               keyboardType: TextInputType.datetime,
                               readOnly: true,
                               onChanged: (value) {
-                                widget.movie.releaseDate =
-                                    DateFormat("dd-MM-yyyy").parse(value!);
+                                widget.movie.releaseDate = DateFormat("dd-MM-yyyy").parse(value!);
                               },
                               style: const TextStyle(
                                 color: Colors.black,
@@ -559,9 +550,7 @@ class _MovieFormState extends State<MovieForm> {
                                 ).then((value) {
                                   setState(() {
                                     widget.movie.releaseDate = value!;
-                                    datePickerController.text =
-                                        DateFormat('dd-MM-yyyy')
-                                            .format(widget.movie.releaseDate);
+                                    datePickerController.text = DateFormat('dd-MM-yyyy').format(widget.movie.releaseDate);
                                   });
                                 });
                               },
@@ -585,8 +574,7 @@ class _MovieFormState extends State<MovieForm> {
                                 changeFormat(option.value),
                                 style: TextStyle(fontSize: 14),
                               ),
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
+                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               value: widget.movie.movieFormats.contains(option),
                               onChanged: (value) {
                                 setState(() {
@@ -611,112 +599,257 @@ class _MovieFormState extends State<MovieForm> {
                       builder: (context, snapshot) {
                         List<Genre> genres = [];
                         if (snapshot.hasData) {
-                          genres = snapshot.data as List<Genre>;
-                        }
-                        return SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Thể loại:'),
-                              ...genres.map(
-                                (genre) => CheckboxListTile(
-                                  title: Text(
-                                    genre.name,
-                                    style: TextStyle(fontSize: 14),
+                          genres = genreProvider.genres;
+                          return SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Thể loại:'),
+                                ...genres.map(
+                                  (genre) => CheckboxListTile(
+                                    title: Text(
+                                      genre.name,
+                                      style: TextStyle(fontSize: 14),
+                                    ),
+                                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    value: widget.movie.genres.map((e) => e.id).contains(genre.id),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        if (value != null && value) {
+                                          widget.movie.genres.add(genre);
+                                        } else {
+                                          widget.movie.genres.removeWhere((element) => element.id == genre.id);
+                                        }
+                                      });
+                                    },
                                   ),
-                                  materialTapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                  value: widget.movie.genres
-                                      .map((e) => e.id)
-                                      .contains(genre.id),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      if (value != null && value) {
-                                        widget.movie.genres.add(genre);
-                                      } else {
-                                        widget.movie.genres.removeWhere(
-                                            (element) =>
-                                                element.id == genre.id);
-                                      }
-                                    });
-                                  },
                                 ),
-                              ),
-                            ],
-                          ),
-                        );
+                              ],
+                            ),
+                          );
+                        }
+                        return Container();
                       },
                     ),
                   ),
                   SizedBox(
-                      width: SizeConfig.screenWidth * 0.6,
-                      child: TextFormField(
-                        decoration: const InputDecoration(
-                          labelText: 'Cốt truyện',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Không được để trống';
-                          }
-                          return null;
-                        },
-                        textAlignVertical: TextAlignVertical.top,
-                        keyboardType: TextInputType.multiline,
-                        maxLines: 5,
-                        onChanged: (value) {
-                          widget.movie.storyLine = value!;
-                        },
-                      )),
+                    width: SizeConfig.screenWidth * 0.6,
+                    child: TextFormField(
+                      initialValue: widget.movie.storyLine,
+                      decoration: const InputDecoration(
+                        labelText: 'Cốt truyện',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Không được để trống';
+                        }
+                        return null;
+                      },
+                      textAlignVertical: TextAlignVertical.top,
+                      keyboardType: TextInputType.multiline,
+                      maxLines: 5,
+                      onChanged: (value) {
+                        widget.movie.storyLine = value;
+                      },
+                    ),
+                  ),
                   // select image button
-                  SizedBox(
-                      width: SizeConfig.screenWidth * 0.27 * 0.6,
-                      child: Column(
+
+                  widget.movie.id != 0
+                      ? Row(
                         children: [
-                          Container(
-                            height: 250,
-                            decoration: imageVertical != null
-                                ? BoxDecoration(
-                                    image: DecorationImage(
-                                      image: Image.memory(imageVerticalBytes)
-                                          .image,
-                                      fit: BoxFit.contain,
-                                    ),
-                                    borderRadius: BorderRadius.circular(10),
-                                  )
-                                : null,
-                            child: imageVertical == null
-                                ? dottedBorder(
-                                    pickImage: _pickImageVertical,
-                                    text: "Chọn ảnh đứng")
-                                : Container(),
-                          ),
+                          FutureBuilder(
+                              future: firebaseStorageService.getImages([widget.movie.imageVertical]),
+                              builder: (context, snapshot) {
+                                if (firebaseStorageService.mapImage[widget.movie.imageVertical] != null) {
+                                  if (imageVertical == null) {
+                                    imageVerticalBytes = firebaseStorageService.mapImage[widget.movie.imageVertical]!;
+                                    widget.submitImageVertical(imageVerticalBytes);
+                                  }
+                                  return SizedBox(
+                                      width: SizeConfig.screenWidth * 0.3 * 0.6,
+                                      child: Column(
+                                        children: [
+                                          HoverBuilder(builder: (isHovering) {
+                                            return Container(
+                                              height: 250,
+                                              decoration: imageVerticalBytes.isNotEmpty
+                                                  ? BoxDecoration(
+                                                image: DecorationImage(
+                                                  image: Image.memory(imageVerticalBytes).image,
+                                                  fit: BoxFit.contain,
+                                                ),
+                                                borderRadius: BorderRadius.circular(10),
+                                              )
+                                                  : null,
+                                              child: imageVerticalBytes.isEmpty
+                                                  ? dottedBorder(pickImage: _pickImageVertical, text: "Chọn ảnh đứng")
+                                                  : (isHovering
+                                                  ? InkWell(
+                                                onTap: () async {
+                                                  await _pickImageVertical();
+                                                },
+                                                child: Container(
+                                                  color: Colors.black.withOpacity(0.5),
+                                                  child: Center(
+                                                    child: Text(
+                                                      "Chọn ảnh khác",
+                                                      style: TextStyle(color: Colors.white, fontSize: 20),
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                                  : Container()),
+                                            );
+                                          }),
+                                        ],
+                                      ));
+                                }
+                                return Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    SizedBox(width: SizeConfig.screenWidth * 0.27 * 0.6, height: 300, child: Center(child: CircularProgressIndicator())),
+                                  ],
+                                );
+                              }),
+                          FutureBuilder(
+                              future: firebaseStorageService.getImages([widget.movie.imageHorizontal]),
+                              builder: (context, snapshot) {
+                                if (firebaseStorageService.mapImage[widget.movie.imageHorizontal] != null) {
+                                  if (imageHorizontal == null) {
+                                    imageHorizontalBytes = firebaseStorageService.mapImage[widget.movie.imageHorizontal]!;
+                                    widget.submitImageHorizontal(imageHorizontalBytes);
+                                  }
+                                  return SizedBox(
+                                      width: SizeConfig.screenWidth * 0.68 * 0.6,
+                                      child: Column(
+                                        children: [
+                                          HoverBuilder(builder: (isHovering) {
+                                            return Container(
+                                              height: 250,
+                                              decoration: imageHorizontalBytes.isNotEmpty
+                                                  ? BoxDecoration(
+                                                      image: DecorationImage(
+                                                        image: Image.memory(imageHorizontalBytes).image,
+                                                        fit: BoxFit.contain,
+                                                      ),
+                                                      borderRadius: BorderRadius.circular(10),
+                                                    )
+                                                  : null,
+                                              child: imageHorizontalBytes.isEmpty
+                                                  ? dottedBorder(pickImage: _pickImageHorizontal, text: "Chọn ảnh ngang")
+                                                  : (isHovering
+                                                      ? InkWell(
+                                                          onTap: () async {
+                                                            _pickImageHorizontal();
+                                                          },
+                                                          child: Container(
+                                                            color: Colors.black.withOpacity(0.5),
+                                                            child: Center(
+                                                              child: Text(
+                                                                "Chọn ảnh khác",
+                                                                style: TextStyle(color: Colors.white, fontSize: 20),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        )
+                                                      : Container()),
+                                            );
+                                          }),
+                                        ],
+                                      ));
+                                }
+                                return Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    SizedBox(width: SizeConfig.screenWidth * 0.67 * 0.6, height: 300, child: Center(child: CircularProgressIndicator())),
+                                  ],
+                                );
+                              }),
                         ],
-                      )),
-                  SizedBox(
-                      width: SizeConfig.screenWidth * 0.67 * 0.6,
-                      child: Column(
-                        children: [
-                          Container(
-                            height: 250,
-                            decoration: imageHorizontal != null
-                                ? BoxDecoration(
-                                    image: DecorationImage(
-                                      image: Image.memory(imageHorizontalBytes)
-                                          .image,
-                                      fit: BoxFit.contain,
-                                    ),
-                                    borderRadius: BorderRadius.circular(10),
-                                  )
-                                : null,
-                            child: imageHorizontal == null
-                                ? dottedBorder(
-                                    pickImage: _pickImageHorizontal,
-                                    text: "Chọn ảnh ngang")
-                                : Container(),
-                          ),
-                        ],
-                      )),
+                      )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+                                width: SizeConfig.screenWidth * 0.27 * 0.6,
+                                child: Column(
+                                  children: [
+                                    HoverBuilder(builder: (isHovering) {
+                                      return Container(
+                                        height: 250,
+                                        decoration: imageVerticalBytes.isNotEmpty
+                                            ? BoxDecoration(
+                                                image: DecorationImage(
+                                                  image: Image.memory(imageVerticalBytes).image,
+                                                  fit: BoxFit.contain,
+                                                ),
+                                                borderRadius: BorderRadius.circular(10),
+                                              )
+                                            : null,
+                                        child: imageVerticalBytes.isEmpty
+                                            ? dottedBorder(pickImage: _pickImageVertical, text: "Chọn ảnh đứng")
+                                            : (isHovering
+                                                ? InkWell(
+                                                    onTap: () {
+                                                      _pickImageVertical();
+                                                    },
+                                                    child: Container(
+                                                      color: Colors.black.withOpacity(0.5),
+                                                      child: Center(
+                                                        child: Text(
+                                                          "Chọn ảnh khác",
+                                                          style: TextStyle(color: Colors.white, fontSize: 20),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  )
+                                                : Container()),
+                                      );
+                                    }),
+                                  ],
+                                )),
+                            SizedBox(
+                                width: SizeConfig.screenWidth * 0.67 * 0.6,
+                                child: Column(
+                                  children: [
+                                    HoverBuilder(builder: (isHovering) {
+                                      return Container(
+                                        height: 250,
+                                        decoration: imageHorizontalBytes.isNotEmpty
+                                            ? BoxDecoration(
+                                                image: DecorationImage(
+                                                  image: Image.memory(imageHorizontalBytes).image,
+                                                  fit: BoxFit.contain,
+                                                ),
+                                                borderRadius: BorderRadius.circular(10),
+                                              )
+                                            : null,
+                                        child: imageHorizontalBytes.isEmpty
+                                            ? dottedBorder(pickImage: _pickImageHorizontal, text: "Chọn ảnh ngang")
+                                            : (isHovering
+                                                ? InkWell(
+                                                    onTap: () {
+                                                      _pickImageHorizontal();
+                                                    },
+                                                    child: Container(
+                                                      color: Colors.black.withOpacity(0.5),
+                                                      child: Center(
+                                                        child: Text(
+                                                          "Chọn ảnh khác",
+                                                          style: TextStyle(color: Colors.white, fontSize: 20),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  )
+                                                : Container()),
+                                      );
+                                    }),
+                                  ],
+                                )),
+                          ],
+                        ),
                 ],
               )
             ],

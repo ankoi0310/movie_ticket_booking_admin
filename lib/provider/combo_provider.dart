@@ -19,30 +19,52 @@ class ComboProvider extends ChangeNotifier {
 
   Future<HttpResponse> createCombo(Combo combo) async {
     HttpResponse response = await apiProvider.post(
-        Uri.parse("$baseUrl/combo/create"),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode({
-          "combo": combo.toJson()
-        })
+      Uri.parse("$baseUrl/combo/create"),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({"combo": combo.toJson()}),
     );
 
+    notifyListeners();
 
     return response;
   }
 
   Future<HttpResponse> getCombos() async {
     HttpResponse response = await apiProvider.post(
-        Uri.parse("$baseUrl/combo/search"),
-        headers: {
+      Uri.parse("$baseUrl/combo/search"),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({}),
+    );
+    _combos = response.data.map<Combo>((e) => Combo.fromJson(e)).toList();
+    return response;
+  }
 
-        },
-        body: jsonEncode({})
+  Future<HttpResponse> updateCombo(Combo combo) async {
+    HttpResponse response = await apiProvider.put(
+      Uri.parse("$baseUrl/combo/update"),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(combo.toJson()),
     );
 
-    _combos = response.data.map<Combo>((e) => Combo.fromJson(e)).toList();
+    notifyListeners();
 
+    return response;
+  }
+
+  Future<HttpResponse> deleteCombo(int id) async {
+    HttpResponse response = await apiProvider.delete(
+      Uri.parse("$baseUrl/combo/delete/$id"),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    notifyListeners();
     return response;
   }
 }
