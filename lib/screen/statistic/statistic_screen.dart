@@ -1,10 +1,9 @@
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/component/bar_chart.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/config/responsive.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/config/size_config.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/constant/constants.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/util/app_util.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/dto/branch/branch_search.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/dto/movie/movie_search.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/handler/http_response.dart';
 
 class StatisticScreen extends StatefulWidget {
   static const String routeName = '/statistic';
@@ -16,10 +15,57 @@ class StatisticScreen extends StatefulWidget {
 }
 
 class _StatisticScreenState extends State<StatisticScreen> {
-  String selectedType = statisticType.entries.first.key;
-  String selectedRange = statisticRange.entries.first.key;
+  late final StatisticProvider _statisticProvider =
+      Provider.of<StatisticProvider>(context, listen: false);
+  late final BranchProvider _branchProvider =
+      Provider.of<BranchProvider>(context, listen: false);
+  late final MovieProvider _movieProvider =
+      Provider.of<MovieProvider>(context, listen: false);
+  String selectedValue = statisticValue.entries.first.key;
+  String selectedTimeline = statisticTimeline.entries.first.key;
   List<DropdownMenuItem<dynamic>> items = [];
-  dynamic selectedDetailItem;
+  dynamic selectedItem;
+
+  Future<void> getStatistic() async {
+    final timeline = StatisticTimeline.values
+        .firstWhere((element) => element.name == selectedTimeline);
+    switch (selectedValue) {
+      case 'revenue-per-branch':
+        await _statisticProvider.getStatistic(
+          StatisticFilter(
+            value: StatisticValue.revenue,
+            timeline: timeline,
+            branchId: selectedItem.id,
+          ),
+        );
+        break;
+      case 'revenue-per-movie':
+        await _statisticProvider.getStatistic(
+          StatisticFilter(
+            value: StatisticValue.revenue,
+            timeline: timeline,
+            movieId: selectedItem.id,
+          ),
+        );
+        break;
+      case 'ticket':
+        await _statisticProvider.getStatistic(
+          StatisticFilter(
+            value: StatisticValue.ticket,
+            timeline: timeline,
+          ),
+        );
+        break;
+      default:
+        await _statisticProvider.getStatistic(
+          StatisticFilter(
+            value: StatisticValue.revenue,
+            timeline: timeline,
+          ),
+        );
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,13 +78,15 @@ class _StatisticScreenState extends State<StatisticScreen> {
                 children: [
                   DropdownButton2(
                     isExpanded: true,
-                    items: AppUtil.createDropdownList(data: statisticType),
-                    value: selectedType,
-                    onChanged: (value) {
-                      chooseType(value);
+                    items: AppUtil.createDropdownList(data: statisticValue),
+                    value: selectedValue,
+                    onChanged: (value) async {
+                      await chooseType(value);
                     },
                     buttonStyleData: ButtonStyleData(
-                      width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                      width: Responsive.isDesktop(context)
+                          ? SizeConfig.screenWidth * 0.15
+                          : SizeConfig.screenWidth,
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       decoration: BoxDecoration(
                         color: Colors.black.withOpacity(0.5),
@@ -53,7 +101,9 @@ class _StatisticScreenState extends State<StatisticScreen> {
                     ),
                     dropdownStyleData: DropdownStyleData(
                       maxHeight: 200,
-                      width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                      width: Responsive.isDesktop(context)
+                          ? SizeConfig.screenWidth * 0.15
+                          : SizeConfig.screenWidth,
                       decoration: const BoxDecoration(color: Colors.black),
                       elevation: 8,
                       scrollbarTheme: ScrollbarThemeData(
@@ -73,14 +123,16 @@ class _StatisticScreenState extends State<StatisticScreen> {
                     DropdownButton2<dynamic>(
                       isExpanded: true,
                       items: items,
-                      value: selectedDetailItem,
+                      value: selectedItem,
                       onChanged: (value) {
                         setState(() {
-                          selectedDetailItem = value;
+                          selectedItem = value;
                         });
                       },
                       buttonStyleData: ButtonStyleData(
-                        width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                        width: Responsive.isDesktop(context)
+                            ? SizeConfig.screenWidth * 0.15
+                            : SizeConfig.screenWidth,
                         padding: const EdgeInsets.symmetric(horizontal: 14),
                         decoration: BoxDecoration(
                           color: Colors.black.withOpacity(0.5),
@@ -95,13 +147,16 @@ class _StatisticScreenState extends State<StatisticScreen> {
                       ),
                       dropdownStyleData: DropdownStyleData(
                         maxHeight: 200,
-                        width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                        width: Responsive.isDesktop(context)
+                            ? SizeConfig.screenWidth * 0.15
+                            : SizeConfig.screenWidth,
                         decoration: const BoxDecoration(color: Colors.black),
                         elevation: 8,
                         scrollbarTheme: ScrollbarThemeData(
                           radius: const Radius.circular(40),
                           thickness: MaterialStateProperty.all<double>(6),
-                          thumbVisibility: MaterialStateProperty.all<bool>(true),
+                          thumbVisibility:
+                              MaterialStateProperty.all<bool>(true),
                         ),
                       ),
                       menuItemStyleData: const MenuItemStyleData(
@@ -114,15 +169,17 @@ class _StatisticScreenState extends State<StatisticScreen> {
                   ],
                   DropdownButton2(
                     isExpanded: true,
-                    items: AppUtil.createDropdownList(data: statisticRange),
-                    value: selectedRange,
+                    items: AppUtil.createDropdownList(data: statisticTimeline),
+                    value: selectedTimeline,
                     onChanged: (value) {
                       setState(() {
-                        selectedRange = value.toString();
+                        selectedTimeline = value.toString();
                       });
                     },
                     buttonStyleData: ButtonStyleData(
-                      width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                      width: Responsive.isDesktop(context)
+                          ? SizeConfig.screenWidth * 0.15
+                          : SizeConfig.screenWidth,
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       decoration: BoxDecoration(
                         color: Colors.black.withOpacity(0.5),
@@ -137,7 +194,9 @@ class _StatisticScreenState extends State<StatisticScreen> {
                     ),
                     dropdownStyleData: DropdownStyleData(
                       maxHeight: 200,
-                      width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                      width: Responsive.isDesktop(context)
+                          ? SizeConfig.screenWidth * 0.15
+                          : SizeConfig.screenWidth,
                       decoration: const BoxDecoration(color: Colors.black),
                       elevation: 8,
                       scrollbarTheme: ScrollbarThemeData(
@@ -159,13 +218,15 @@ class _StatisticScreenState extends State<StatisticScreen> {
                 children: [
                   DropdownButton2(
                     isExpanded: true,
-                    items: AppUtil.createDropdownList(data: statisticType),
-                    value: selectedType,
-                    onChanged: (value) {
-                      chooseType(value);
+                    items: AppUtil.createDropdownList(data: statisticValue),
+                    value: selectedValue,
+                    onChanged: (value) async {
+                      await chooseType(value);
                     },
                     buttonStyleData: ButtonStyleData(
-                      width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                      width: Responsive.isDesktop(context)
+                          ? SizeConfig.screenWidth * 0.15
+                          : SizeConfig.screenWidth,
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       decoration: BoxDecoration(
                         color: Colors.black.withOpacity(0.5),
@@ -180,7 +241,9 @@ class _StatisticScreenState extends State<StatisticScreen> {
                     ),
                     dropdownStyleData: DropdownStyleData(
                       maxHeight: 200,
-                      width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                      width: Responsive.isDesktop(context)
+                          ? SizeConfig.screenWidth * 0.15
+                          : SizeConfig.screenWidth,
                       decoration: const BoxDecoration(color: Colors.black),
                       elevation: 8,
                       scrollbarTheme: ScrollbarThemeData(
@@ -200,14 +263,19 @@ class _StatisticScreenState extends State<StatisticScreen> {
                     DropdownButton2<dynamic>(
                       isExpanded: true,
                       items: items,
-                      value: selectedDetailItem,
+                      value: selectedItem,
                       onChanged: (value) {
                         setState(() {
-                          selectedDetailItem = value;
+                          selectedItem = value;
                         });
+                        print(selectedValue);
+                        print(selectedTimeline);
+                        print(selectedItem);
                       },
                       buttonStyleData: ButtonStyleData(
-                        width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                        width: Responsive.isDesktop(context)
+                            ? SizeConfig.screenWidth * 0.15
+                            : SizeConfig.screenWidth,
                         padding: const EdgeInsets.symmetric(horizontal: 14),
                         decoration: BoxDecoration(
                           color: Colors.black.withOpacity(0.5),
@@ -222,13 +290,16 @@ class _StatisticScreenState extends State<StatisticScreen> {
                       ),
                       dropdownStyleData: DropdownStyleData(
                         maxHeight: 200,
-                        width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                        width: Responsive.isDesktop(context)
+                            ? SizeConfig.screenWidth * 0.15
+                            : SizeConfig.screenWidth,
                         decoration: const BoxDecoration(color: Colors.black),
                         elevation: 8,
                         scrollbarTheme: ScrollbarThemeData(
                           radius: const Radius.circular(40),
                           thickness: MaterialStateProperty.all<double>(6),
-                          thumbVisibility: MaterialStateProperty.all<bool>(true),
+                          thumbVisibility:
+                              MaterialStateProperty.all<bool>(true),
                         ),
                       ),
                       menuItemStyleData: const MenuItemStyleData(
@@ -241,15 +312,20 @@ class _StatisticScreenState extends State<StatisticScreen> {
                   ],
                   DropdownButton2(
                     isExpanded: true,
-                    items: AppUtil.createDropdownList(data: statisticRange),
-                    value: selectedRange,
+                    items: AppUtil.createDropdownList(data: statisticTimeline),
+                    value: selectedTimeline,
                     onChanged: (value) {
                       setState(() {
-                        selectedRange = value.toString();
+                        selectedTimeline = value.toString();
                       });
+                      print(selectedValue);
+                      print(selectedTimeline);
+                      print(selectedItem);
                     },
                     buttonStyleData: ButtonStyleData(
-                      width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                      width: Responsive.isDesktop(context)
+                          ? SizeConfig.screenWidth * 0.15
+                          : SizeConfig.screenWidth,
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       decoration: BoxDecoration(
                         color: Colors.black.withOpacity(0.5),
@@ -264,7 +340,9 @@ class _StatisticScreenState extends State<StatisticScreen> {
                     ),
                     dropdownStyleData: DropdownStyleData(
                       maxHeight: 200,
-                      width: Responsive.isDesktop(context) ? SizeConfig.screenWidth * 0.15 : SizeConfig.screenWidth,
+                      width: Responsive.isDesktop(context)
+                          ? SizeConfig.screenWidth * 0.15
+                          : SizeConfig.screenWidth,
                       decoration: const BoxDecoration(color: Colors.black),
                       elevation: 8,
                       scrollbarTheme: ScrollbarThemeData(
@@ -282,36 +360,72 @@ class _StatisticScreenState extends State<StatisticScreen> {
                 ],
               ),
         const SizedBox(height: 40),
-        SizedBox(
-          height: SizeConfig.screenHeight * 0.6,
-          child: const BarChartCopmponent(),
-        ),
+        FutureBuilder(
+            future: _statisticProvider.getStatistic(
+              StatisticFilter(
+                value: StatisticValue.revenue,
+                timeline: StatisticTimeline.day,
+                branchId: selectedItem,
+              ),
+            ),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                HttpResponse response = snapshot.data as HttpResponse;
+                return SizedBox(
+                  height: SizeConfig.screenHeight * 0.6,
+                  child: BarChartCopmponent(data: response.data),
+                );
+              }
+
+              return const SizedBox();
+            })
       ],
     );
   }
 
-  void chooseType(value) {
+  Future<void> chooseType(value) async {
     setState(() {
-      selectedType = value.toString();
+      selectedValue = value.toString();
     });
 
     switch (value.toString()) {
-      case 'revenue-per-movie':
-      case 'showtime-per-movie':
-      case 'order-per-movie':
-        // get movie list
-        items = AppUtil.createDropdownDetailList(data: movies);
-        selectedDetailItem = items.first.value;
-        break;
       case 'revenue-per-branch':
-      case 'showtime-per-branch':
-      case 'order-per-branch':
-        // get cinema list
-        items = AppUtil.createDropdownDetailList(data: branches);
-        selectedDetailItem = items.first.value;
+        _branchProvider.getBranches(BranchSearch()).then((response) {
+          if (response.success) {
+            Map<int, String> branches = {
+              for (var e in _branchProvider.branches) e.id: e.name
+            };
+            setState(() {
+              items = AppUtil.createDropdownDetailList(data: branches);
+              selectedItem = items.first.value;
+            });
+            print(selectedValue);
+            print(selectedTimeline);
+            print(selectedItem);
+          }
+        });
+        break;
+      case 'revenue-per-movie':
+        _movieProvider.getMovies(MovieSearch()).then((response) {
+          if (response.success) {
+            Map<int, String> movies = {
+              for (var e in _movieProvider.movies) e.id: e.name
+            };
+            setState(() {
+              items = AppUtil.createDropdownDetailList(data: movies);
+              selectedItem = items.first.value;
+            });
+            print(selectedValue);
+            print(selectedTimeline);
+            print(selectedItem);
+          }
+        });
         break;
       default:
         items = [];
+        print(selectedValue);
+        print(selectedTimeline);
+        print(selectedItem);
         break;
     }
   }

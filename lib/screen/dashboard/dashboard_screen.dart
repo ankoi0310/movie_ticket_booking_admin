@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/component/bar_chart.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/handler/http_response.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/layout/default/component/activity.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/screen/dashboard/component/general_statistic.dart';
 
@@ -12,6 +13,9 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  late final StatisticProvider _statisticProvider =
+      Provider.of<StatisticProvider>(context, listen: false);
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -31,7 +35,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   fontWeight: FontWeight.w400,
                   color: AppColors.secondary,
                 ),
-                PrimaryText(text: NumberFormat.currency(locale: 'vi', symbol: 'VNĐ').format(15000000), size: 30, fontWeight: FontWeight.w800),
+                PrimaryText(
+                    text: NumberFormat.currency(locale: 'vi', symbol: 'VNĐ')
+                        .format(15000000),
+                    size: 30,
+                    fontWeight: FontWeight.w800),
               ],
             ),
             const PrimaryText(
@@ -43,7 +51,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
         SizedBox(height: SizeConfig.blockSizeVertical * 3),
-        const SizedBox(height: 180, child: BarChartCopmponent()),
+        FutureBuilder(
+            future: _statisticProvider.getStatistic(StatisticFilter(
+              value: StatisticValue.revenue,
+              timeline: StatisticTimeline.day,
+            )),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                HttpResponse response = snapshot.data as HttpResponse;
+                return SizedBox(
+                  height: 180,
+                  child: BarChartCopmponent(data: response.data),
+                );
+              }
+
+              return const Center(child: CircularProgressIndicator());
+            }),
         if (!Responsive.isDesktop(context)) ...[
           SizedBox(height: SizeConfig.blockSizeVertical * 5),
           const Activity(),

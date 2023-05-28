@@ -6,8 +6,6 @@ import 'package:movie_ticket_booking_admin_flutter_nlu/constant/api_constant.dar
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/dto/branch/branch_search.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/handler/http_response.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/model/branch.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/provider/api_provider.dart';
 
 class BranchProvider with ChangeNotifier {
   final apiProvider = ApiProvider.instance;
@@ -40,7 +38,8 @@ class BranchProvider with ChangeNotifier {
 
   Future<Branch?> getBranchById(int id) async {
     try {
-      final response = await http.get(Uri.parse('http://localhost:3000/api/branch/$id'));
+      final response =
+          await http.get(Uri.parse('http://localhost:3000/api/branch/$id'));
 
       Map jsonResponse = jsonDecode(response.body);
 

@@ -6,7 +6,10 @@ import 'package:movie_ticket_booking_admin_flutter_nlu/style/colors.dart';
 class BarChartCopmponent extends StatelessWidget {
   const BarChartCopmponent({
     Key? key,
+    required this.data,
   }) : super(key: key);
+
+  final Map<int, int> data;
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/handler/http_response.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/screen/exception/bad_request_exception.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/util/popup_util.dart';
 
@@ -18,22 +17,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authenticationProvider = Provider.of<AuthenticationProvider>(context, listen: false);
+    final authenticationProvider =
+        Provider.of<AuthenticationProvider>(context, listen: false);
 
     Future<void> login() async {
-      await authenticationProvider
-          .login(UserLoginRequest(
-        email: email,
-        password: password,
-      ))
+      authenticationProvider
+          .login(UserLoginRequest(email: email, password: password))
           .then((response) {
         if (response.success) {
           PopupUtil.showSuccess(
             context: context,
             message: 'Đăng nhập thành công',
             width: SizeConfig.screenWidth * 0.4,
-            onPress: () async {
-              await AppRouterDelegate().setPathName(AuthRouteData.dashboard.name);
+            onPress: () {
+              AppRouterDelegate.instance
+                  .setPathName(AuthRouteData.dashboard.name);
             },
           );
         } else {
@@ -47,7 +45,9 @@ class _LoginScreenState extends State<LoginScreen> {
         PopupUtil.showError(
           context: context,
           width: SizeConfig.screenWidth * 0.6 * 0.6,
-          message: onError is BadRequestException ? onError.message : 'Lỗi không xác định',
+          message: onError is BadRequestException
+              ? onError.message
+              : 'Lỗi không xác định',
         );
       });
     }
@@ -193,6 +193,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               return 'Password is required';
                             }
                             return null;
+                          },
+                          onFieldSubmitted: (value) async {
+                            if (_loginFormKey.currentState!.validate()) {
+                              _loginFormKey.currentState!.save();
+                              await login();
+                            }
                           },
                         ),
                       ),

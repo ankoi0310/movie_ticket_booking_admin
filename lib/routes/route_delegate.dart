@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/layout/full_width/full_width_layout.dart';
 
-class AppRouterDelegate extends RouterDelegate<RoutePath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<RoutePath> {
+class AppRouterDelegate extends RouterDelegate<RoutePath>
+    with ChangeNotifier, PopNavigatorRouterDelegateMixin<RoutePath> {
   static final AppRouterDelegate _instance = AppRouterDelegate._();
 
   bool? isLoggedIn;
   String? pathName = "";
   bool isError = false;
 
-  final AuthenticationService _authenticationService = AuthenticationService.instance;
+  final AuthenticationService _authenticationService =
+      AuthenticationService.instance;
 
   factory AppRouterDelegate({bool? isLoggedIn}) {
     _instance.isLoggedIn = isLoggedIn;
@@ -23,12 +25,15 @@ class AppRouterDelegate extends RouterDelegate<RoutePath> with ChangeNotifier, P
 
   AppRouterDelegate._();
 
+  static AppRouterDelegate get instance => _instance;
+
   TransitionDelegate transitionDelegate = CustomTransitionDelegate();
 
   late List<Page> _stack = [];
 
   @override
-  GlobalKey<NavigatorState> get navigatorKey => CustomNavigationKey.navigatorKey;
+  GlobalKey<NavigatorState> get navigatorKey =>
+      CustomNavigationKey.navigatorKey;
 
   @override
   RoutePath get currentConfiguration {
@@ -55,7 +60,9 @@ class AppRouterDelegate extends RouterDelegate<RoutePath> with ChangeNotifier, P
   List<Page> get _authStack => [
         MaterialPage(
           key: const ValueKey('auth'),
-          child: isLoggedIn == true ? DefaultLayout(routeName: pathName!) : FullWidthLayout(routeName: pathName!),
+          child: isLoggedIn == true
+              ? DefaultLayout(routeName: pathName!)
+              : FullWidthLayout(routeName: pathName!),
         ),
       ];
 
@@ -69,7 +76,10 @@ class AppRouterDelegate extends RouterDelegate<RoutePath> with ChangeNotifier, P
 
   @override
   Widget build(BuildContext context) {
-    _stack = AuthRouteData.values.map((e) => e.name).contains(pathName) && isLoggedIn == true ? _authStack : _appStack;
+    _stack = AuthRouteData.values.map((e) => e.name).contains(pathName) &&
+            isLoggedIn == true
+        ? _authStack
+        : _appStack;
     _stack = isError ? _notFoundStack : _stack;
 
     return Navigator(
@@ -101,7 +111,8 @@ class AppRouterDelegate extends RouterDelegate<RoutePath> with ChangeNotifier, P
       isError = true;
     } else if (configuration.isOtherPage) {
       if (configuration.pathName != null) {
-        if (isLoggedIn == true && configuration.pathName == PublicRouteData.login.name) {
+        if (isLoggedIn == true &&
+            configuration.pathName == PublicRouteData.login.name) {
           pathName = AuthRouteData.dashboard.name;
         }
       } else {
@@ -125,7 +136,8 @@ class AppRouterDelegate extends RouterDelegate<RoutePath> with ChangeNotifier, P
 
     if (pathName == null) {
       if (isLoggedIn == true) {
-        await setNewRoutePath(RoutePath.dashboard(AuthRouteData.dashboard.name));
+        await setNewRoutePath(
+            RoutePath.dashboard(AuthRouteData.dashboard.name));
       } else {
         await setNewRoutePath(RoutePath.login(PublicRouteData.login.name));
       }

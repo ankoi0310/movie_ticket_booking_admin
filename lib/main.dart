@@ -8,7 +8,6 @@ import 'package:movie_ticket_booking_admin_flutter_nlu/app.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/provider/combo_provider.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/provider/component/loading_provider.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/provider/invoice_provider.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/screen/exception/bad_request_exception.dart';
 
 import 'core.dart';
 
@@ -52,7 +51,8 @@ void main() async {
           ),
         );
       }, (error, stackTrace) {
-        BadRequestException badRequestException = error as BadRequestException;
-        print('Error: ${badRequestException.message}');
+        print('Error: $error');
+        // BadRequestException badRequestException = error as BadRequestException;
+        // print('Error: ${badRequestException.message}');
       }));
 }
