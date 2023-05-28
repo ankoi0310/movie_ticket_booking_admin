@@ -54,14 +54,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
         FutureBuilder(
             future: _statisticProvider.getStatistic(StatisticFilter(
               value: StatisticValue.revenue,
-              timeline: StatisticTimeline.day,
+              timeline: StatisticTimeline.week,
             )),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 HttpResponse response = snapshot.data as HttpResponse;
+
                 return SizedBox(
                   height: 180,
-                  child: BarChartCopmponent(data: response.data),
+                  child: BarChartCopmponent(
+                    data: Map.from(response.data),
+                    timeline: StatisticTimeline.week,
+                  ),
                 );
               }
 

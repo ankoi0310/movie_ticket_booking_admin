@@ -373,7 +373,9 @@ class _StatisticScreenState extends State<StatisticScreen> {
                 HttpResponse response = snapshot.data as HttpResponse;
                 return SizedBox(
                   height: SizeConfig.screenHeight * 0.6,
-                  child: BarChartCopmponent(data: response.data),
+                  child: BarChartCopmponent(
+                      data: Map.from(response.data),
+                      timeline: StatisticTimeline.day),
                 );
               }
 

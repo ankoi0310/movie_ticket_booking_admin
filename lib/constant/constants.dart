@@ -12,4 +12,8 @@ final Map<String, String> statisticTimeline = {
   'year': 'This Year',
 };
 
-// Pie chart
+// Timeline data
+final List<int> timelineDay = List.generate(1, (index) => index + 1);
+final List<int> timelineWeek = List.generate(7, (index) => index + 1);
+final List<int> timelineMonth = List.generate(30, (index) => index + 1);
+final List<int> timelineYear = List.generate(12, (index) => index + 1);
