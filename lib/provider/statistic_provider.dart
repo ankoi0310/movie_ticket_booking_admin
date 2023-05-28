@@ -62,6 +62,7 @@ class StatisticProvider with ChangeNotifier {
       },
       body: jsonEncode(filter.toJson()),
     );
+    print(response.data);
 
     notifyListeners();
     return response;
