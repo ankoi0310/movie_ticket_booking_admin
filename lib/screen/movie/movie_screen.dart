@@ -1,9 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/component/loading.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/dto/movie/movie_search.dart';
@@ -11,7 +9,6 @@ import 'package:movie_ticket_booking_admin_flutter_nlu/provider/component/loadin
 import 'package:movie_ticket_booking_admin_flutter_nlu/screen/exception/bad_request_exception.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/screen/movie/component/movie_form.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/source/movie_data_source.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/util/popup_util.dart';
 
 class MovieScreen extends StatefulWidget {

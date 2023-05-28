@@ -3,6 +3,7 @@ import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/handler/http_response.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/provider/component/loading_provider.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/provider/product_provider.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/exception/bad_request_exception.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/screen/product/component/product_form.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/source/product_data_source.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/util/popup_util.dart';
@@ -25,38 +26,35 @@ class _ProductScreenState extends State<ProductScreen> {
 
     int currentPageIndex = 0;
 
-    Future<HttpResponse> createProduct(Product newProduct) async {
+    Future<void> createProduct(Product newProduct) async {
       setState(() {
         loadingProvider.setLoading(true);
       });
-      HttpResponse response = await productProvider.createProduct(newProduct);
-
-      if (response.success) {
-        setState(() {
-          loadingProvider.setLoading(false);
-        });
-        PopupUtil.showSuccess(
+      await productProvider.createProduct(newProduct).then((response) {
+        if (response.success) {
+          PopupUtil.showSuccess(
             context: context,
-            message: 'Thêm sản phẩm thành công',
             width: SizeConfig.screenWidth * 0.6 * 0.6,
+            message: 'Thêm sản phẩm thành công',
             onPress: () {
-              setState(() {
-                product = Product.empty();
-              });
+              product = Product.empty();
               Navigator.of(context).pop();
-            });
-      } else {
-        setState(() {
-          loadingProvider.setLoading(false);
-        });
+            },
+          );
+        } else {
+          PopupUtil.showError(
+            context: context,
+            width: SizeConfig.screenWidth * 0.6 * 0.6,
+            message: response.message,
+          );
+        }
+      }).catchError((error) {
         PopupUtil.showError(
           context: context,
-          message: response.message,
           width: SizeConfig.screenWidth * 0.6 * 0.6,
+          message: error is BadRequestException ? error.message : 'Lỗi không xác định',
         );
-      }
-
-      return response;
+      });
     }
 
     return FutureBuilder(

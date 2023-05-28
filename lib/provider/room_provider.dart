@@ -6,11 +6,10 @@ import 'package:movie_ticket_booking_admin_flutter_nlu/constant/api_constant.dar
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/dto/room/room_search.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/handler/http_response.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/provider/api_provider.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/screen/exception/bad_request_exception.dart';
 
 class RoomProvider extends ChangeNotifier {
   final apiProvider = ApiProvider.instance;
+  final token = AuthenticationService.instance.token;
   Room? _room;
 
   Room? get room => _room;
@@ -59,6 +58,7 @@ class RoomProvider extends ChangeNotifier {
         Uri.parse('$baseUrl/room/create'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
         },
         body: jsonEncode(room.toJson()),
     );
@@ -72,6 +72,7 @@ class RoomProvider extends ChangeNotifier {
       Uri.parse('$baseUrl/room/update'),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
       },
       body: jsonEncode(room.toJson()),
     );
@@ -85,6 +86,7 @@ class RoomProvider extends ChangeNotifier {
       Uri.parse('$baseUrl/room/delete/$id'),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
       },
     );
 

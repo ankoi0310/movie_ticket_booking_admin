@@ -1,12 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/exception/bad_request_exception.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/screen/product/component/product_form.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/util/popup_util.dart';
 
 class ProductDataSource extends DataTableSource {
   final BuildContext context;
   final ProductProvider provider;
 
   ProductDataSource({required this.context, required this.provider});
+
+  Future<void> update(Product newProduct) async {
+    await provider.updateProduct(newProduct).then((response) async => {
+      if(response.success) {
+        PopupUtil.showSuccess(
+          context: context,
+          width: SizeConfig.screenWidth * 0.6 * 0.6,
+          message: 'Cập nhật sản phẩm thành công',
+          onPress: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      } else {
+        PopupUtil.showError(
+          context: context,
+          width: SizeConfig.screenWidth * 0.6 * 0.6,
+          message: response.message,
+        ),
+      }
+    }).catchError((error) {
+      PopupUtil.showError(
+        context: context,
+        width: SizeConfig.screenWidth * 0.6 * 0.6,
+        message: error is BadRequestException ? error.message : 'Lỗi không xác định',
+      );
+    });
+
+  }
+  Future<void> delete(int id) async {
+    await provider.deleteProduct(id).then((response) async => {
+      if(response.success) {
+        PopupUtil.showSuccess(
+          context: context,
+          width: SizeConfig.screenWidth * 0.6 * 0.6,
+          message: 'Xoá sản phẩm thành công',
+          onPress: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      } else {
+        PopupUtil.showError(
+          context: context,
+          width: SizeConfig.screenWidth * 0.6 * 0.6,
+          message: response.message,
+        ),
+      }
+    }).catchError((error) {
+      PopupUtil.showError(
+        context: context,
+        width: SizeConfig.screenWidth * 0.6 * 0.6,
+        message: error is BadRequestException ? error.message : 'Lỗi không xác định',
+      );
+    });
+
+  }
 
   @override
   DataRow2 getRow(int index) {
@@ -50,12 +107,10 @@ class ProductDataSource extends DataTableSource {
                               child: const Text('Hủy'),
                             ),
                             TextButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 if (formKey.currentState!.validate()) {
                                   formKey.currentState!.save();
-                                  provider.updateProduct(product).then((value) async => {
-                                    Navigator.of(context).pop(),
-                                  });
+                                  await update(product);
                                 }
                               },
                               child: const Text('Lưu'),
@@ -85,10 +140,8 @@ class ProductDataSource extends DataTableSource {
                             ),
                             ElevatedButton(
                               child: Text('Xoá'),
-                              onPressed: () {
-                                provider.deleteProduct(product.id).then((value) async => {
-                                  Navigator.of(context).pop(),
-                                });
+                              onPressed: () async {
+                                await delete(product.id);
                               },
                             ),
                           ],

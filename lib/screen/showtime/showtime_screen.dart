@@ -4,6 +4,7 @@ import 'package:movie_ticket_booking_admin_flutter_nlu/dto/show_time/show_time_s
 import 'package:movie_ticket_booking_admin_flutter_nlu/handler/http_response.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/model/show_time.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/provider/component/loading_provider.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/exception/bad_request_exception.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/screen/showtime/components/show_time_form.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/source/showtime_data_source.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/util/popup_util.dart';
@@ -27,38 +28,44 @@ class _ShowtimeScreenState extends State<ShowtimeScreen> {
 
     int currentPageIndex =0;
 
-    Future<HttpResponse> createShowtime(ShowTime newShowTime) async {
+    Future<void> createShowtime(ShowTime newShowTime) async {
       setState(() {
         loadingProvider.setLoading(true);
       });
-      HttpResponse response = await showtimeProvider.createShowtime(newShowTime);
-
-      if (response.success) {
-        setState(() {
-          loadingProvider.setLoading(false);
-        });
-        PopupUtil.showSuccess(
-            context: context,
-            message: 'Thêm lịch chiếu thành công',
-            width: SizeConfig.screenWidth * 0.6 * 0.6,
-            onPress: () {
-              setState(() {
-                showtime = ShowTime.empty();
+      await showtimeProvider.createShowtime(newShowTime).then((response) {
+        if (response.success) {
+          setState(() {
+            loadingProvider.setLoading(false);
+          });
+          PopupUtil.showSuccess(
+              context: context,
+              message: 'Thêm lịch chiếu thành công',
+              width: SizeConfig.screenWidth * 0.6 * 0.6,
+              onPress: () {
+                setState(() {
+                  showtime = ShowTime.empty();
+                });
+                Navigator.of(context).pop();
               });
-              Navigator.of(context).pop();
-            });
-      } else {
-        setState(() {
-          loadingProvider.setLoading(false);
-        });
-        PopupUtil.showError(
+        } else {
+          setState(() {
+            loadingProvider.setLoading(false);
+          });
+          PopupUtil.showError(
             context: context,
             message: response.message,
             width: SizeConfig.screenWidth * 0.6 * 0.6,
+          );
+        }
+      }).catchError((error) {
+        PopupUtil.showError(
+          context: context,
+          width: SizeConfig.screenWidth * 0.6 * 0.6,
+          message: error is BadRequestException ? error.message : 'Lỗi không xác định',
         );
-      }
+      });
 
-      return response;
+
     }
 
     return FutureBuilder(

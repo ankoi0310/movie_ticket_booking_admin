@@ -4,8 +4,19 @@ import 'package:movie_ticket_booking_admin_flutter_nlu/model/menu_icon.dart';
 
 import 'side_bar_tile.dart';
 
-class SideBarMenu extends StatelessWidget {
+class SideBarMenu extends StatefulWidget {
   const SideBarMenu({Key? key}) : super(key: key);
+
+  @override
+  State<SideBarMenu> createState() => _SideBarMenuState();
+}
+
+class _SideBarMenuState extends State<SideBarMenu> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +50,11 @@ class SideBarMenu extends StatelessWidget {
                 (index) => SideBarTile(
                   icon: sideBarMenuItems[index].icon,
                   title: sideBarMenuItems[index].title,
+                  pathName: sideBarMenuItems[index].route.name,
                   press: () {
-                    AppRouterDelegate().setPathName(sideBarMenuItems[index].route.name);
+                    setState(() {
+                      AppRouterDelegate().setPathName(sideBarMenuItems[index].route.name);
+                    });
                   },
                 ),
               ),

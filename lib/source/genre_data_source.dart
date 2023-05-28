@@ -1,12 +1,80 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/exception/bad_request_exception.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/screen/genre/component/genre_form.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/util/popup_util.dart';
 
 class GenreDataTableSource extends DataTableSource {
   GenreDataTableSource({required this.context, required this.provider});
 
   final BuildContext context;
   final GenreProvider provider;
+
+  Future<void> update(Genre newGenre) async {
+    await provider
+        .updateGenre(newGenre)
+        .then((response) async => {
+              if (response.success)
+                {
+                  PopupUtil.showSuccess(
+                    context: context,
+                    width: SizeConfig.screenWidth * 0.6 * 0.6,
+                    message: 'Cập nhật thể loại thành công',
+                    onPress: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                }
+              else
+                {
+                  PopupUtil.showError(
+                    context: context,
+                    width: SizeConfig.screenWidth * 0.6 * 0.6,
+                    message: response.message,
+                  ),
+                }
+            })
+        .catchError((error) {
+      PopupUtil.showError(
+        context: context,
+        width: SizeConfig.screenWidth * 0.6 * 0.6,
+        message: error is BadRequestException ? error.message : 'Lỗi không xác định',
+      );
+    });
+  }
+
+  Future<void> delete(int id) async {
+    await provider
+        .deleteGenre(id)
+        .then((response) async => {
+              if (response.success)
+                {
+                  PopupUtil.showSuccess(
+                    context: context,
+                    width: SizeConfig.screenWidth * 0.6 * 0.6,
+                    message: 'Xoá thể loại thành công',
+                    onPress: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                }
+              else
+                {
+                  PopupUtil.showError(
+                    context: context,
+                    width: SizeConfig.screenWidth * 0.6 * 0.6,
+                    message: response.message,
+                  ),
+                }
+            })
+        .catchError((error) {
+      PopupUtil.showError(
+        context: context,
+        width: SizeConfig.screenWidth * 0.6 * 0.6,
+        message: error is BadRequestException ? error.message : 'Lỗi không xác định',
+      );
+    });
+  }
 
   @override
   DataRow2 getRow(int index) {
@@ -49,10 +117,10 @@ class GenreDataTableSource extends DataTableSource {
                             ),
                             TextButton(
                               child: const Text('Lưu'),
-                              onPressed: () {
+                              onPressed: () async {
                                 if (formKey.currentState!.validate()) {
                                   formKey.currentState!.save();
-                                  provider.updateGenre(genre).then((value) async => {Navigator.of(context).pop()});
+                                  await update(genre);
                                 }
                               },
                             ),
@@ -76,8 +144,8 @@ class GenreDataTableSource extends DataTableSource {
                             ElevatedButton(child: const Text('Hủy'), onPressed: () => Navigator.of(context).pop()),
                             ElevatedButton(
                               child: const Text('Xoá'),
-                              onPressed: () {
-                                provider.deleteGenre(genre.id).then((value) async => Navigator.of(context).pop());
+                              onPressed: () async {
+                                await delete(genre.id);
                               },
                             ),
                           ],

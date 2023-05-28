@@ -10,11 +10,11 @@ class AppUser extends General{
   String password;
   bool enabled;
   bool accountNonLocked;
-  String facebookId;
-  String googleId;
-  List<AppRole> roles;
+  String? facebookId;
+  String? googleId;
+  List<AppRole> appRoles;
   UserInfo userInfo;
-  List<Invoice> invoices;
+  List<Invoice>? invoices;
 
   AppUser({
     required int id,
@@ -25,7 +25,7 @@ class AppUser extends General{
     required this.accountNonLocked,
     required this.facebookId,
     required this.googleId,
-    required this.roles,
+    required this.appRoles,
     required this.userInfo,
     required this.invoices,
     required GeneralState state,
@@ -47,7 +47,7 @@ class AppUser extends General{
         accountNonLocked = false,
         facebookId = '',
         googleId = '',
-        roles = [],
+        appRoles = [],
         userInfo = UserInfo.empty(),
         invoices = [],
         super.empty();
@@ -70,9 +70,9 @@ class AppUser extends General{
       accountNonLocked: json['accountNonLocked'],
       facebookId: json['facebookId'],
       googleId: json['googleId'],
-      roles: (json['roles'] as List).map((e) => AppRole.fromJson(e)).toList(),
+      appRoles: (json['appRoles'] as List).map((e) => AppRole.fromJson(e)).toList(),
       userInfo: UserInfo.fromJson(json['userInfo']),
-      invoices: (json['invoices'] as List).map((e) => Invoice.fromJson(e)).toList(),
+      invoices:json['invoices'] != null? (json['invoices'] as List).map((e) => Invoice.fromJson(e)).toList(): null,
       state: GeneralState.values.firstWhere((e) => e.value == json['state']),
       createdDate: DateFormat('dd-MM-yyyy HH:mm:ss').parse(json['createdDate']),
       modifiedDate:
@@ -93,9 +93,9 @@ Map<String, dynamic> toJson() {
       'accountNonLocked': accountNonLocked,
       'facebookId': facebookId,
       'googleId': googleId,
-      'roles': roles.map((e) => e.toJson()).toList(),
+      'appRoles': appRoles.map((e) => e.toJson()).toList(),
       'userInfo': userInfo.toJson(),
-      'invoices': invoices.map((e) => e.toJson()).toList(),
+      'invoices': invoices!.map((e) => e.toJson()).toList(),
       'state': state.value,
       'createdDate': DateFormat('dd-MM-yyyy HH:mm:ss').format(createdDate),
       'modifiedDate': DateFormat('dd-MM-yyyy HH:mm:ss').format(modifiedDate),

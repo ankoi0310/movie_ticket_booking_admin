@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/dto/branch/branch_search.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/screen/branch/component/branch_form.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/exception/bad_request_exception.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/source/branch_data_source.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/util/popup_util.dart';
 
 class BranchScreen extends StatefulWidget {
   const BranchScreen({Key? key}) : super(key: key);
@@ -18,6 +20,35 @@ class _BranchScreenState extends State<BranchScreen> {
   @override
   Widget build(BuildContext context) {
     final branchProvider = Provider.of<BranchProvider>(context);
+    Branch branch = Branch.empty();
+
+    Future<void> createBranch(Branch newBranch) async {
+      branchProvider.createBranch(newBranch).then((response) {
+        if(response.success) {
+          PopupUtil.showSuccess(
+            context: context,
+            width: SizeConfig.screenWidth * 0.6 * 0.6,
+            message: 'Thêm chi nhánh thành công',
+            onPress: () {
+              branch = Branch.empty();
+              Navigator.of(context).pop();
+            },
+          );
+        } else {
+          PopupUtil.showError(
+            context: context,
+            width: SizeConfig.screenWidth * 0.6 * 0.6,
+            message: response.message,
+          );
+        }
+      }).catchError((error) {
+        PopupUtil.showError(
+          context: context,
+          width: SizeConfig.screenWidth * 0.6 * 0.6,
+          message: error is BadRequestException ? error.message : 'Lỗi không xác định',
+        );
+      });
+    }
 
     return FutureBuilder(
       future: branchProvider.getBranches(BranchSearch()),
@@ -31,35 +62,36 @@ class _BranchScreenState extends State<BranchScreen> {
                   ElevatedButton(
                     child: const Text('Thêm chi nhánh'),
                     onPressed: () {
-                      Branch newBranch = Branch.empty();
+
                       showDialog(
                         context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Thêm chi nhánh'),
-                          content: Container(
-                            padding: const EdgeInsets.all(8),
-                            width: SizeConfig.screenWidth * 0.3,
-                            child: BranchForm(
-                              formKey: _formKey,
-                              branch: newBranch,
+                        builder: (context) =>
+                            AlertDialog(
+                              title: const Text('Thêm chi nhánh'),
+                              content: Container(
+                                padding: const EdgeInsets.all(8),
+                                width: SizeConfig.screenWidth * 0.3,
+                                child: BranchForm(
+                                  formKey: _formKey,
+                                  branch: branch,
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  child: const Text('Hủy'),
+                                  onPressed: () => Navigator.of(context).pop(),
+                                ),
+                                TextButton(
+                                  child: const Text('Thêm'),
+                                  onPressed: () async {
+                                    if (_formKey.currentState!.validate()) {
+                                      _formKey.currentState!.save();
+                                      await createBranch(branch);
+                                    }
+                                  },
+                                ),
+                              ],
                             ),
-                          ),
-                          actions: [
-                            TextButton(
-                              child: const Text('Hủy'),
-                              onPressed: () => Navigator.of(context).pop(),
-                            ),
-                            TextButton(
-                              child: const Text('Thêm'),
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  _formKey.currentState!.save();
-                                  branchProvider.createBranch(newBranch).then((value) => Navigator.of(context).pop());
-                                }
-                              },
-                            ),
-                          ],
-                        ),
                       );
                     },
                   ),

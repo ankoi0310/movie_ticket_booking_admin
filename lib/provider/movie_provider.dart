@@ -2,18 +2,17 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:movie_ticket_booking_admin_flutter_nlu/constant/api_constant.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/dto/movie/movie_search.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/handler/http_response.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/provider/api_provider.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/screen/exception/bad_request_exception.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/service/firebase_storage_service.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/util/string_util.dart';
 
 class MovieProvider with ChangeNotifier {
   final apiProvider = ApiProvider.instance;
+  final token = AuthenticationService.instance.token;
   Movie? _movie;
 
   Movie? get movie => _movie;
@@ -57,6 +56,7 @@ class MovieProvider with ChangeNotifier {
       Uri.parse('$baseUrl/movie/create'),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
       },
       body: jsonEncode({
         "movie": movie.toJson(),
@@ -81,6 +81,7 @@ class MovieProvider with ChangeNotifier {
       Uri.parse('$baseUrl/movie/update'),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
       },
       body: jsonEncode(movie.toJson()),
     );
@@ -100,6 +101,7 @@ class MovieProvider with ChangeNotifier {
       Uri.parse('$baseUrl/movie/delete/$id'),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
       },
     );
 

@@ -54,6 +54,8 @@ dependencies:
   dotted_border: ^2.0.0+3
   flutter_datetime_picker: ^1.5.1
   quantity_input: ^1.0.2
+  hive_flutter: ^1.1.0
+
 
 #  stacked_services: ^1.0.2
 

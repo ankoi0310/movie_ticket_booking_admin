@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/dto/genre/genre_search.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/exception/bad_request_exception.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/screen/genre/component/genre_form.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/source/genre_data_source.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/util/popup_util.dart';
 
 class GenreScreen extends StatefulWidget {
   const GenreScreen({Key? key}) : super(key: key);
@@ -14,10 +16,39 @@ class GenreScreen extends StatefulWidget {
 class _GenreScreenState extends State<GenreScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   int currentPageIndex = 0;
+  Genre genre = Genre.empty();
 
   @override
   Widget build(BuildContext context) {
     final genreProvider = Provider.of<GenreProvider>(context);
+
+    Future<void> createGenre(Genre newGenre) async {
+      genreProvider.createGenre(newGenre).then((response) {
+        if (response.success) {
+          PopupUtil.showSuccess(
+            context: context,
+            width: SizeConfig.screenWidth * 0.6 * 0.6,
+            message: 'Thêm thể loại thành công',
+            onPress: () {
+              genre = Genre.empty();
+              Navigator.of(context).pop();
+            },
+          );
+        } else {
+          PopupUtil.showError(
+            context: context,
+            width: SizeConfig.screenWidth * 0.6 * 0.6,
+            message: response.message,
+          );
+        }
+      }).catchError((error) {
+        PopupUtil.showError(
+          context: context,
+          width: SizeConfig.screenWidth * 0.6 * 0.6,
+          message: error is BadRequestException ? error.message : 'Lỗi không xác định',
+        );
+      });
+    }
 
     return FutureBuilder(
       future: genreProvider.getGenres(GenreSearch()),
@@ -31,7 +62,6 @@ class _GenreScreenState extends State<GenreScreen> {
                   ElevatedButton(
                     child: const Text('Thêm thể loại'),
                     onPressed: () {
-                      Genre newGenre = Genre.empty();
                       showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
@@ -40,7 +70,7 @@ class _GenreScreenState extends State<GenreScreen> {
                             padding: const EdgeInsets.all(8),
                             child: GenreForm(
                               formKey: _formKey,
-                              genre: newGenre,
+                              genre: genre,
                             ),
                           ),
                           actions: [
@@ -50,9 +80,10 @@ class _GenreScreenState extends State<GenreScreen> {
                             ),
                             TextButton(
                               child: const Text('Thêm'),
-                              onPressed: () {
+                              onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
-                                  genreProvider.createGenre(newGenre).then((value) => Navigator.of(context).pop());
+                                  _formKey.currentState!.save();
+                                  await createGenre(genre);
                                 }
                               },
                             ),

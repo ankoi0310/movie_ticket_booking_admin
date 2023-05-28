@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/layout/full_width/full_width_layout.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/service/hive_storage_service.dart';
 
 class AppRouterDelegate extends RouterDelegate<RoutePath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<RoutePath> {
   static final AppRouterDelegate _instance = AppRouterDelegate._();
 
   bool? isLoggedIn;
-  String? pathName;
+  String? pathName = "";
   bool isError = false;
 
+  final AuthenticationService _authenticationService = AuthenticationService.instance;
 
   factory AppRouterDelegate({bool? isLoggedIn}) {
     _instance.isLoggedIn = isLoggedIn;
+
+    RouteData.values.addAll(PublicRouteData.values);
+    if (isLoggedIn == true) {
+      RouteData.values.addAll(AuthRouteData.values);
+    }
     return _instance;
   }
 
@@ -27,19 +32,22 @@ class AppRouterDelegate extends RouterDelegate<RoutePath> with ChangeNotifier, P
 
   @override
   RoutePath get currentConfiguration {
-    if (isError) return RoutePath.unkown();
+    if (isError) return RoutePath.notFound(pathName);
 
-    if (pathName == null) return RoutePath.home('dashboard');
-
-    return RoutePath.otherPage(pathName);
+    if (pathName == null) {
+      if (isLoggedIn == true) {
+        return RoutePath.dashboard(AuthRouteData.dashboard.name);
+      } else {
+        return RoutePath.login(PublicRouteData.login.name);
+      }
+    }
+    return RoutePath.otherPage(pathName!);
   }
 
   List<Page> get _appStack => [
         MaterialPage(
-          key: const ValueKey('dashboard'),
-          child: DefaultLayout(
-            routeName: pathName ?? RouteData.dashboard.name,
-          ),
+          key: const ValueKey('auth'),
+          child: FullWidthLayout(routeName: pathName!),
         )
       ];
 
@@ -47,9 +55,7 @@ class AppRouterDelegate extends RouterDelegate<RoutePath> with ChangeNotifier, P
   List<Page> get _authStack => [
         MaterialPage(
           key: const ValueKey('auth'),
-          child: FullWidthLayout(
-            routeName: RouteData.login.name,
-          ),
+          child: isLoggedIn == true ? DefaultLayout(routeName: pathName!) : FullWidthLayout(routeName: pathName!),
         ),
       ];
 
@@ -63,13 +69,8 @@ class AppRouterDelegate extends RouterDelegate<RoutePath> with ChangeNotifier, P
 
   @override
   Widget build(BuildContext context) {
-    if (isLoggedIn == true) {
-      _stack = _appStack;
-    } else if (isLoggedIn == false) {
-      _stack = _authStack;
-    } else {
-      _stack = _notFoundStack;
-    }
+    _stack = AuthRouteData.values.map((e) => e.name).contains(pathName) && isLoggedIn == true ? _authStack : _appStack;
+    _stack = isError ? _notFoundStack : _stack;
 
     return Navigator(
       key: navigatorKey,
@@ -87,39 +88,112 @@ class AppRouterDelegate extends RouterDelegate<RoutePath> with ChangeNotifier, P
 
   @override
   Future<void> setNewRoutePath(RoutePath configuration) async {
-    bool isLoggedIn = await HiveDataStorageService.getUser();
+    isLoggedIn = await _authenticationService.isLoggedIn();
     pathName = configuration.pathName;
 
-    if (configuration.isOtherPage) {
-      if (configuration.pathName != null) {
-        if (isLoggedIn == true) {
-          /// If logged in
-          if (configuration.pathName == RouteData.login.name) {
-            pathName = RouteData.dashboard.name;
-            isError = false;
-          } else {
-            pathName = configuration.pathName != RouteData.login.name ? configuration.pathName : RouteData.dashboard.name;
-            isError = false;
-          }
-        } else {
-          pathName = RouteData.login.name;
+    RouteData.values.addAll(PublicRouteData.values);
+    if (isLoggedIn == true) {
+      RouteData.values.addAll(AuthRouteData.values);
+    }
 
-          isError = false;
+    if (configuration.isNotfound) {
+      pathName = configuration.pathName;
+      isError = true;
+    } else if (configuration.isOtherPage) {
+      if (configuration.pathName != null) {
+        if (isLoggedIn == true && configuration.pathName == PublicRouteData.login.name) {
+          pathName = AuthRouteData.dashboard.name;
         }
       } else {
         pathName = configuration.pathName;
-        isError = false;
       }
+      isError = false;
     } else {
-      pathName = "/";
+      if (isLoggedIn == true) {
+        pathName = AuthRouteData.dashboard.name;
+      } else {
+        pathName = PublicRouteData.login.name;
+      }
+      isError = false;
     }
     notifyListeners();
   }
 
-  void setPathName(String path, {bool loggedIn = true}) {
+  Future<void> setPathName(String path) async {
     pathName = path;
-    isLoggedIn = loggedIn;
-    setNewRoutePath(RoutePath.otherPage(pathName));
+    isLoggedIn = await _authenticationService.isLoggedIn();
+
+    if (pathName == null) {
+      if (isLoggedIn == true) {
+        await setNewRoutePath(RoutePath.dashboard(AuthRouteData.dashboard.name));
+      } else {
+        await setNewRoutePath(RoutePath.login(PublicRouteData.login.name));
+      }
+    }
+    if (!RouteData.values.map((e) => e.name).contains(pathName)) {
+      isError = true;
+      await setNewRoutePath(RoutePath.notFound(pathName!));
+    } else {
+      await setNewRoutePath(RoutePath.otherPage(pathName!));
+    }
     notifyListeners();
   }
+}
+
+class RouteData {
+  final String name;
+
+  static const notFound = RouteData._('notFound');
+  static const internalServerError = RouteData._('internal-server-error');
+
+  const RouteData._(this.name);
+
+  static Set<RouteData> values = {
+    notFound,
+    internalServerError,
+  };
+}
+
+class AuthRouteData extends RouteData {
+  static const dashboard = AuthRouteData._('dashboard');
+  static const user = AuthRouteData._('user');
+  static const movie = AuthRouteData._('movie');
+  static const genre = AuthRouteData._('genre');
+  static const branch = AuthRouteData._('branch');
+  static const room = AuthRouteData._('room');
+  static const showtime = AuthRouteData._('showtime');
+  static const product = AuthRouteData._('product');
+  static const combo = AuthRouteData._('combo');
+  static const invoice = AuthRouteData._('invoice');
+  static const statistic = AuthRouteData._('statistic');
+  static const advertisement = AuthRouteData._('advertisement');
+  static const promotion = AuthRouteData._('promotion');
+
+  const AuthRouteData._(String name) : super._(name);
+
+  static Set<AuthRouteData> values = {
+    dashboard,
+    user,
+    movie,
+    genre,
+    branch,
+    room,
+    showtime,
+    product,
+    combo,
+    invoice,
+    statistic,
+    advertisement,
+    promotion,
+  };
+}
+
+class PublicRouteData extends RouteData {
+  static const login = PublicRouteData._('login');
+
+  const PublicRouteData._(String name) : super._(name);
+
+  static Set<PublicRouteData> values = {
+    login,
+  };
 }

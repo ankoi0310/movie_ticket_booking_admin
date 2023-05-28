@@ -31,11 +31,10 @@ class _ComboFormState extends State<ComboForm> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    if(widget.combo.comboItems.isEmpty) {
+    if (widget.combo.comboItems.isEmpty) {
       widget.combo.comboItems = [ComboItem.empty()];
     }
   }
-
 
   Widget dottedBorder({
     required Function() pickImage,
@@ -140,83 +139,82 @@ class _ComboFormState extends State<ComboForm> {
               ),
             ),
             Container(),
-            widget.combo.id != 0 ? FutureBuilder(
-                future: firebaseStorageService.getImages([widget.combo.image]),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    if(image == null) {
-                      imageBytes = firebaseStorageService.mapImage[widget.combo.image]!;
-                      widget.submitImage(imageBytes);
-                    }
-                    return SizedBox(
-                        width: SizeConfig.screenWidth * 0.6,
-                        child: Column(
-                          children: [
-                            HoverBuilder(builder: (isHovering) {
-                              return Container(
-                                height: 250,
-                                decoration: imageBytes.isNotEmpty
-                                    ? BoxDecoration(
+            widget.combo.id != 0
+                ? FutureBuilder(
+                    future: firebaseStorageService.getImages([widget.combo.image]),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        if (image == null) {
+                          imageBytes = firebaseStorageService.mapImage[widget.combo.image]!;
+                          widget.submitImage(imageBytes);
+                        }
+                        return SizedBox(
+                            width: SizeConfig.screenWidth * 0.6,
+                            child: Column(
+                              children: [
+                                HoverBuilder(builder: (isHovering) {
+                                  return Container(
+                                    height: 250,
+                                    decoration: imageBytes.isNotEmpty
+                                        ? BoxDecoration(
+                                            image: DecorationImage(
+                                              image: Image.memory(imageBytes).image,
+                                              fit: BoxFit.contain,
+                                            ),
+                                            borderRadius: BorderRadius.circular(10),
+                                          )
+                                        : null,
+                                    child: imageBytes.isEmpty
+                                        ? dottedBorder(pickImage: _pickImage, text: "Chọn ảnh")
+                                        : (isHovering
+                                            ? InkWell(
+                                                onTap: () async {
+                                                  await _pickImage();
+                                                  setState(() {
+                                                    // isUpdateImageVertical = true;
+                                                  });
+                                                },
+                                                child: Container(
+                                                  color: Colors.black.withOpacity(0.5),
+                                                  child: Center(
+                                                    child: Text(
+                                                      "Chọn ảnh khác",
+                                                      style: TextStyle(color: Colors.white, fontSize: 20),
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                            : Container()),
+                                  );
+                                }),
+                              ],
+                            ));
+                      }
+                      return Container(
+                          width: SizeConfig.screenWidth * 0.6,
+                          height: 300,
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.black)),
+                          child: Center(child: CircularProgressIndicator()));
+                    })
+                : SizedBox(
+                    width: SizeConfig.screenWidth * 0.6,
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 250,
+                          decoration: imageBytes.isNotEmpty
+                              ? BoxDecoration(
                                   image: DecorationImage(
                                     image: Image.memory(imageBytes).image,
                                     fit: BoxFit.contain,
                                   ),
                                   borderRadius: BorderRadius.circular(10),
                                 )
-                                    : null,
-                                child: imageBytes.isEmpty
-                                    ? dottedBorder(pickImage: _pickImage, text: "Chọn ảnh")
-                                    : (isHovering
-                                    ? InkWell(
-                                  onTap: () async {
-                                    await _pickImage();
-                                    setState(() {
-                                      // isUpdateImageVertical = true;
-                                    });
-                                  },
-                                  child: Container(
-                                    color: Colors.black.withOpacity(0.5),
-                                    child: Center(
-                                      child: Text(
-                                        "Chọn ảnh khác",
-                                        style: TextStyle(color: Colors.white, fontSize: 20),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                                    : Container()),
-                              );
-                            }),
-                          ],
-                        ));
-                  }
-                  return Container(
-                      width: SizeConfig.screenWidth * 0.6,
-                      height: 300,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.black)
-                      ),
-                      child: Center(child: CircularProgressIndicator()));
-                }):SizedBox(
-                width: SizeConfig.screenWidth * 0.6,
-                child: Column(
-                  children: [
-                    Container(
-                      height: 250,
-                      decoration: imageBytes.isNotEmpty
-                          ? BoxDecoration(
-                              image: DecorationImage(
-                                image: Image.memory(imageBytes).image,
-                                fit: BoxFit.contain,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            )
-                          : null,
-                      child: imageBytes.isEmpty ? dottedBorder(pickImage: _pickImage, text: "Chọn ảnh combo") : Container(),
-                    ),
-                  ],
-                )),
+                              : null,
+                          child: imageBytes.isEmpty ? dottedBorder(pickImage: _pickImage, text: "Chọn ảnh combo") : Container(),
+                        ),
+                      ],
+                    )),
             Container(),
             SizedBox(
               child: FutureBuilder(

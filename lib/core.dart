@@ -3,6 +3,7 @@ export 'package:dropdown_button2/dropdown_button2.dart';
 export 'package:intl/intl.dart';
 export 'package:provider/provider.dart';
 export 'package:readmore/readmore.dart';
+export 'package:hive_flutter/adapters.dart';
 
 export 'config/datatable_config.dart';
 export 'config/dropdown_button_config.dart';
@@ -22,6 +23,9 @@ export 'model/combo.dart';
 // export 'model/showtime.dart';
 // export 'model/ticket.dart';
 // export 'model/user.dart';
+
+/*--------------- Provider ---------------*/
+export 'provider/authentication_provider.dart';
 export 'provider/advertisement_provider.dart';
 export 'provider/branch_provider.dart';
 export 'provider/genre_provider.dart';
@@ -31,8 +35,11 @@ export 'provider/room_provider.dart';
 export 'provider/showtime_provider.dart';
 export 'provider/product_provider.dart';
 export 'provider/statistic_provider.dart';
-export 'provider/ticket_provider.dart';
 export 'provider/user_provider.dart';
+export 'provider/api_provider.dart';
+export 'provider/hive/hive_provider.dart';
+
+
 export 'routes/custom_navigation_key.dart';
 export 'routes/custom_transition_delegate.dart';
 export 'routes/route_delegate.dart';
@@ -51,10 +58,16 @@ export 'screen/promotion/promotion_screen.dart';
 export 'screen/room/room_screen.dart';
 export 'screen/showtime/showtime_screen.dart';
 export 'screen/statistic/statistic_screen.dart';
-export 'screen/ticket/ticket_screen.dart';
+export 'screen/invoice/invoice_screen.dart';
 export 'screen/user/user_screen.dart';
 export 'screen/combo/combo_screen.dart';
 export 'screen/product/product_screen.dart';
 export 'style/colors.dart';
 export 'style/style.dart';
 export 'util/app_util.dart';
+
+/*--------------- Service ---------------*/
+export 'service/authentication_service.dart';
+
+/*--------------- dto ---------------*/
+export 'dto/auth/user_login.dart';

@@ -52,7 +52,7 @@ class ShowTime extends General {
       movie: json['movie'] == null ? null : Movie.fromJson(json['movie'] as Map<String, dynamic>),
       price: json['price'] as int,
       movieFormat: MovieFormat.fromValue(json['movieFormat']),
-      invoices: (json['invoices'] as List).map((e) => Invoice.fromJson(e)).toList(),
+      invoices: json['invoices'] != null ? (json['invoices'] as List).map((e) => Invoice.fromJson(e)).toList(): [],
       state: GeneralState.fromValue(json['state']),
       createdDate: DateFormat('dd-MM-yyyy HH:mm:ss').parse(json['createdDate']),
       modifiedDate: DateFormat('dd-MM-yyyy HH:mm:ss').parse(json['modifiedDate']),

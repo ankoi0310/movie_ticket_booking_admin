@@ -2,8 +2,6 @@ import 'package:intl/intl.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/model/general.dart';
 
 class UserInfo extends General {
-  String firstName;
-  String lastName;
   String fullName;
   bool isMale;
   String avatar;
@@ -11,8 +9,6 @@ class UserInfo extends General {
 
   UserInfo({
     required int id,
-    required this.firstName,
-    required this.lastName,
     required this.fullName,
     required this.isMale,
     required this.avatar,
@@ -29,9 +25,7 @@ class UserInfo extends General {
           deletedDate: deletedDate);
 
   UserInfo.empty()
-      : firstName = '',
-        lastName = '',
-        fullName = '',
+      : fullName = '',
         isMale = false,
         avatar = '',
         dateOfBirth = DateTime.now(),
@@ -48,12 +42,10 @@ class UserInfo extends General {
   factory UserInfo.fromJson(Map<String, dynamic> json) {
     return UserInfo(
       id: json['id'],
-      firstName: json['firstName'],
-      lastName: json['lastName'],
       fullName: json['fullName'],
       isMale: json['isMale'],
       avatar: json['avatar'],
-      dateOfBirth: DateTime.parse(json['dateOfBirth']),
+      dateOfBirth: DateFormat("dd-MM-yyyy").parse(json['dateOfBirth']),
       state: GeneralState.values.firstWhere((e) => e.value == json['state']),
       createdDate: DateFormat('dd-MM-yyyy HH:mm:ss').parse(json['createdDate']),
       modifiedDate:
@@ -67,12 +59,10 @@ class UserInfo extends General {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'firstName': firstName,
-      'lastName': lastName,
       'fullName': fullName,
       'isMale': isMale,
       'avatar': avatar,
-      'dateOfBirth': dateOfBirth.toIso8601String(),
+      'dateOfBirth': DateFormat('dd-MM-yyyy').format(dateOfBirth),
       'state': state.value,
       'createdDate': DateFormat('dd-MM-yyyy HH:mm:ss').format(createdDate),
       'modifiedDate': DateFormat('dd-MM-yyyy HH:mm:ss').format(modifiedDate),

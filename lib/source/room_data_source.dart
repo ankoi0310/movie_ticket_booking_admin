@@ -1,12 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/exception/bad_request_exception.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/screen/room/component/room_form.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/util/popup_util.dart';
 
 class RoomDataTableSource extends DataTableSource {
   RoomDataTableSource({required this.context, required this.provider});
 
   final BuildContext context;
   final RoomProvider provider;
+
+  Future<void> update(Room newRoom) async {
+    await provider.updateRoom(newRoom).then((response) async => {
+      if(response.success) {
+        PopupUtil.showSuccess(
+          context: context,
+          width: SizeConfig.screenWidth * 0.6 * 0.6,
+          message: 'Cập nhật phòng thành công',
+          onPress: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      } else {
+        PopupUtil.showError(
+          context: context,
+          width: SizeConfig.screenWidth * 0.6 * 0.6,
+          message: response.message,
+        ),
+      }
+    }).catchError((error) {
+      PopupUtil.showError(
+        context: context,
+        width: SizeConfig.screenWidth * 0.6 * 0.6,
+        message: error is BadRequestException ? error.message : 'Lỗi không xác định',
+      );
+    });
+
+  }
+  Future<void> delete(int id) async {
+    await provider.deleteRoom(id).then((response) async => {
+      if(response.success) {
+        PopupUtil.showSuccess(
+          context: context,
+          width: SizeConfig.screenWidth * 0.6 * 0.6,
+          message: 'Xoá phòng thành công',
+          onPress: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      } else {
+        PopupUtil.showError(
+          context: context,
+          width: SizeConfig.screenWidth * 0.6 * 0.6,
+          message: response.message,
+        ),
+      }
+    }).catchError((error) {
+      PopupUtil.showError(
+        context: context,
+        width: SizeConfig.screenWidth * 0.6 * 0.6,
+        message: error is BadRequestException ? error.message : 'Lỗi không xác định',
+      );
+    });
+
+  }
 
   @override
   DataRow2 getRow(int index) {
@@ -55,10 +112,10 @@ class RoomDataTableSource extends DataTableSource {
                             ),
                             TextButton(
                               child: const Text('Lưu'),
-                              onPressed: () {
+                              onPressed: () async {
                                 if (formKey.currentState!.validate()) {
                                   formKey.currentState!.save();
-                                  provider.updateRoom(room).then((value) async => {Navigator.of(context).pop()});
+                                  await update(room);
                                 }
                               },
                             ),
@@ -82,8 +139,8 @@ class RoomDataTableSource extends DataTableSource {
                             ElevatedButton(child: const Text('Hủy'), onPressed: () => Navigator.of(context).pop()),
                             ElevatedButton(
                               child: const Text('Xoá'),
-                              onPressed: () {
-                                provider.deleteRoom(room.id).then((value) async => Navigator.of(context).pop());
+                              onPressed: () async {
+                                await delete(room.id);
                               },
                             ),
                           ],

@@ -1,12 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/screen/branch/component/branch_form.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/exception/bad_request_exception.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/util/popup_util.dart';
 
 class BranchDataTableSource extends DataTableSource {
   BranchDataTableSource({required this.context, required this.provider});
 
   final BuildContext context;
   final BranchProvider provider;
+
+  Future<void> update(Branch newBranch) async {
+    await provider.updateBranch(newBranch).then((response) async => {
+      if(response.success) {
+        PopupUtil.showSuccess(
+          context: context,
+          width: SizeConfig.screenWidth * 0.6 * 0.6,
+          message: 'Cập nhật chi nhánh thành công',
+          onPress: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      } else {
+        PopupUtil.showError(
+          context: context,
+          width: SizeConfig.screenWidth * 0.6 * 0.6,
+          message: response.message,
+        ),
+      }
+    }).catchError((error) {
+      PopupUtil.showError(
+        context: context,
+        width: SizeConfig.screenWidth * 0.6 * 0.6,
+        message: error is BadRequestException ? error.message : 'Lỗi không xác định',
+      );
+    });
+
+  }
+  Future<void> delete(int id) async {
+    await provider.deleteBranch(id).then((response) async => {
+      if(response.success) {
+        PopupUtil.showSuccess(
+          context: context,
+          width: SizeConfig.screenWidth * 0.6 * 0.6,
+          message: 'Xoá chi nhánh thành công',
+          onPress: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      } else {
+        PopupUtil.showError(
+          context: context,
+          width: SizeConfig.screenWidth * 0.6 * 0.6,
+          message: response.message,
+        ),
+      }
+    }).catchError((error) {
+      PopupUtil.showError(
+        context: context,
+        width: SizeConfig.screenWidth * 0.6 * 0.6,
+        message: error is BadRequestException ? error.message : 'Lỗi không xác định',
+      );
+    });
+
+  }
 
   @override
   DataRow2 getRow(int index) {
@@ -50,10 +107,10 @@ class BranchDataTableSource extends DataTableSource {
                               child: const Text('Hủy'),
                             ),
                             TextButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 if (formKey.currentState!.validate()) {
                                   formKey.currentState!.save();
-                                  provider.updateBranch(branch).then((value) async => {Navigator.of(context).pop()});
+                                  await update(branch);
                                 }
                               },
                               child: const Text('Lưu'),
@@ -83,10 +140,8 @@ class BranchDataTableSource extends DataTableSource {
                             ),
                             ElevatedButton(
                               child: const Text('Xoá'),
-                              onPressed: () {
-                                provider.deleteBranch(branch.id).then((value) async => {
-                                      Navigator.of(context).pop(),
-                                    });
+                              onPressed: () async {
+                                await delete(branch.id);
                               },
                             ),
                           ],

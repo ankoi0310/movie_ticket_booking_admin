@@ -8,6 +8,7 @@ import 'package:movie_ticket_booking_admin_flutter_nlu/handler/http_response.dar
 import 'package:movie_ticket_booking_admin_flutter_nlu/provider/combo_provider.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/provider/component/loading_provider.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/screen/combo/component/combo_form.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/exception/bad_request_exception.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/service/firebase_storage_service.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/source/combo_data_source.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/util/popup_util.dart';
@@ -33,47 +34,45 @@ class _ComboScreenState extends State<ComboScreen> {
     Uint8List? dataImageBytes;
     int currentPageIndex = 0;
 
-
     void submitImage(Uint8List? image) {
       setState(() {
         dataImageBytes = image;
       });
     }
 
-    Future<HttpResponse> createCombo(Combo newCombo) async {
+    Future<void> createCombo(Combo newCombo) async {
       setState(() {
         loadingProvider.setLoading(true);
       });
       newCombo.image = '/images/${StringUtil.convert(combo.name)}.jpg';
-      HttpResponse response = await comboProvider.createCombo(newCombo);
-      if (response.success) {
-        await firebaseStorageService.uploadImage(combo.image, dataImageBytes!);
-
-        setState(() {
-          loadingProvider.setLoading(false);
-        });
-        PopupUtil.showSuccess(
-            context: context,
-            message: 'Thêm sản phẩm thành công',
-            width: SizeConfig.screenWidth * 0.6 * 0.6,
-            onPress: () {
-              setState(() {
-                combo = Combo.empty();
-              });
-              Navigator.of(context).pop();
+      await comboProvider.createCombo(newCombo).then((response) {
+        if (response.success) {
+          firebaseStorageService.uploadImage(combo.image, dataImageBytes!).then((value) {
+            setState(() {
+              loadingProvider.setLoading(false);
             });
-      } else {
+            PopupUtil.showSuccess(
+                context: context,
+                message: 'Thêm sản phẩm thành công',
+                width: SizeConfig.screenWidth * 0.6 * 0.6,
+                onPress: () {
+                  setState(() {
+                    combo = Combo.empty();
+                  });
+                  Navigator.of(context).pop();
+                });
+          });
+        }
+      }).catchError((error) {
         setState(() {
           loadingProvider.setLoading(false);
         });
         PopupUtil.showError(
           context: context,
-          message: response.message,
           width: SizeConfig.screenWidth * 0.6 * 0.6,
+          message: error is BadRequestException ? error.message : 'Lỗi không xác định',
         );
-      }
-
-      return response;
+      });
     }
 
     return FutureBuilder(
@@ -90,45 +89,58 @@ class _ComboScreenState extends State<ComboScreen> {
                     onPressed: () {
                       showDialog(
                         context: context,
-                        builder: (context) =>
-                            Consumer<LoadingProvider>(
-                              builder: (context, provider, child) {
-                                return Stack(
-                                  children: [
-                                    AlertDialog(
-                                      title: const Text('Thêm combo'),
-                                      content: Container(
-                                        width: SizeConfig.screenWidth * 0.4,
-                                        padding: const EdgeInsets.all(8),
-                                        child: SingleChildScrollView(
-                                          child: ComboForm(
-                                              formKey: formKey,
-                                              combo: combo,
-                                              submitImage: submitImage,
-                                          ),
-                                        ),
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          child: const Text('Hủy'),
-                                          onPressed: () => Navigator.of(context).pop(),
-                                        ),
-                                        TextButton(
-                                          child: const Text('Thêm'),
-                                          onPressed: () async {
-                                            if (formKey.currentState!.validate()) {
-                                              formKey.currentState!.save();
-                                              await createCombo(combo);
-                                            }
-                                          },
-                                        ),
-                                      ],
+                        builder: (context) => Consumer<LoadingProvider>(builder: (context, provider, child) {
+                          return Stack(
+                            children: [
+                              AlertDialog(
+                                title: const Text('Thêm combo'),
+                                content: Container(
+                                  width: SizeConfig.screenWidth * 0.4,
+                                  padding: const EdgeInsets.all(8),
+                                  child: SingleChildScrollView(
+                                    child: ComboForm(
+                                      formKey: formKey,
+                                      combo: combo,
+                                      submitImage: submitImage,
                                     ),
-                                    if (loadingProvider.loading) const Loading()
-                                  ],
-                                );
-                              }
-                            ),
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    child: const Text('Hủy'),
+                                    onPressed: () => Navigator.of(context).pop(),
+                                  ),
+                                  TextButton(
+                                    child: const Text('Thêm'),
+                                    onPressed: () async {
+                                      if (formKey.currentState!.validate()) {
+                                        formKey.currentState!.save();
+                                        if (combo.comboItems.where((element) => element.product!.id == 0).isNotEmpty) {
+                                          PopupUtil.showError(
+                                            context: context,
+                                            width: SizeConfig.screenWidth * 0.6 * 0.6,
+                                            message: 'Vui lòng chọn sản phẩm',
+                                          );
+                                          return;
+                                        } else if (combo.comboItems.where((element) => element.quantity == 0).isNotEmpty) {
+                                          PopupUtil.showError(
+                                            context: context,
+                                            width: SizeConfig.screenWidth * 0.6 * 0.6,
+                                            message: 'Số lượng phải lớn hơn 0',
+                                          );
+                                          return;
+                                        } else {
+                                          await createCombo(combo);
+                                        }
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
+                              if (loadingProvider.loading) const Loading()
+                            ],
+                          );
+                        }),
                       );
                     },
                   ),

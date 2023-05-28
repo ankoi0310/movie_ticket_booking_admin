@@ -1,13 +1,81 @@
 import 'package:flutter/material.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/model/show_time.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/screen/exception/bad_request_exception.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/screen/showtime/components/show_time_form.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/util/popup_util.dart';
 
 class ShowtimeDataSource extends DataTableSource {
   final BuildContext context;
   final ShowtimeProvider provider;
 
   ShowtimeDataSource({required this.context, required this.provider});
+
+  Future<void> update(ShowTime newShowtime) async {
+    await provider
+        .updateShowtime(newShowtime)
+        .then((response) async => {
+              if (response.success)
+                {
+                  PopupUtil.showSuccess(
+                    context: context,
+                    width: SizeConfig.screenWidth * 0.6 * 0.6,
+                    message: 'Cập nhật lịch chiếu thành công',
+                    onPress: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                }
+              else
+                {
+                  PopupUtil.showError(
+                    context: context,
+                    width: SizeConfig.screenWidth * 0.6 * 0.6,
+                    message: response.message,
+                  ),
+                }
+            })
+        .catchError((error) {
+      PopupUtil.showError(
+        context: context,
+        width: SizeConfig.screenWidth * 0.6 * 0.6,
+        message: error is BadRequestException ? error.message : 'Lỗi không xác định',
+      );
+    });
+  }
+
+  Future<void> delete(int id) async {
+    await provider
+        .deleteShowtime(id)
+        .then((response) async => {
+              if (response.success)
+                {
+                  PopupUtil.showSuccess(
+                    context: context,
+                    width: SizeConfig.screenWidth * 0.6 * 0.6,
+                    message: 'Xoá lịch chiếu thành công',
+                    onPress: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                }
+              else
+                {
+                  PopupUtil.showError(
+                    context: context,
+                    width: SizeConfig.screenWidth * 0.6 * 0.6,
+                    message: response.message,
+                  ),
+                }
+            })
+        .catchError((error) {
+      PopupUtil.showError(
+        context: context,
+        width: SizeConfig.screenWidth * 0.6 * 0.6,
+        message: error is BadRequestException ? error.message : 'Lỗi không xác định',
+      );
+    });
+  }
 
   @override
   DataRow2 getRow(int index) {
@@ -55,12 +123,10 @@ class ShowtimeDataSource extends DataTableSource {
                               child: const Text('Hủy'),
                             ),
                             TextButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 if (formKey.currentState!.validate()) {
                                   formKey.currentState!.save();
-                                  provider.updateShowtime(showtime).then((value) async => {
-                                    Navigator.of(context).pop(),
-                                  });
+                                  await update(showtime);
                                 }
                               },
                               child: const Text('Lưu'),
@@ -90,10 +156,8 @@ class ShowtimeDataSource extends DataTableSource {
                             ),
                             ElevatedButton(
                               child: Text('Xoá'),
-                              onPressed: () {
-                                provider.deleteShowtime(showtime.id).then((value) async => {
-                                  Navigator.of(context).pop(),
-                                });
+                              onPressed: () async {
+                                await delete(showtime.id);
                               },
                             ),
                           ],

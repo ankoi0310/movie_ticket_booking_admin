@@ -1,15 +1,14 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:movie_ticket_booking_admin_flutter_nlu/constant/api_constant.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/dto/genre/genre_search.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/handler/http_response.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/provider/api_provider.dart';
 
 class GenreProvider extends ChangeNotifier {
   final apiProvider = ApiProvider.instance;
+  final token = AuthenticationService.instance.token;
   Genre? _genre;
 
   Genre? get genre => _genre;
@@ -51,6 +50,7 @@ class GenreProvider extends ChangeNotifier {
     HttpResponse response = await apiProvider.post(Uri.parse('$baseUrl/genre/create'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
         },
         body: jsonEncode({"genre": genre.toJson()}));
 
@@ -62,6 +62,7 @@ class GenreProvider extends ChangeNotifier {
     HttpResponse response = await apiProvider.put(Uri.parse('$baseUrl/genre/update'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
         },
         body: jsonEncode(genre.toJson()));
 
@@ -74,6 +75,7 @@ class GenreProvider extends ChangeNotifier {
       Uri.parse('$baseUrl/genre/delete/$id'),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
       },
     );
 

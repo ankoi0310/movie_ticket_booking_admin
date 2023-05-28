@@ -5,10 +5,11 @@ import 'package:movie_ticket_booking_admin_flutter_nlu/constant/api_constant.dar
 import 'package:movie_ticket_booking_admin_flutter_nlu/handler/http_response.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/model/product.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/provider/api_provider.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/service/authentication_service.dart';
 
 class ProductProvider extends ChangeNotifier {
   final apiProvider = ApiProvider.instance;
-
+  final token = AuthenticationService.instance.token;
   Product? _product;
 
   List<Product> _products = [];
@@ -22,6 +23,7 @@ class ProductProvider extends ChangeNotifier {
       Uri.parse("$baseUrl/product/create"),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
       },
       body: jsonEncode({
         "product": product.toJson()
@@ -50,6 +52,7 @@ class ProductProvider extends ChangeNotifier {
       Uri.parse("$baseUrl/product/update"),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
       },
       body: jsonEncode(product.toJson())
     );
@@ -63,6 +66,7 @@ class ProductProvider extends ChangeNotifier {
       Uri.parse("$baseUrl/product/delete/$id"),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
       },
     );
 

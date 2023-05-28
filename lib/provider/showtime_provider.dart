@@ -2,13 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/constant/api_constant.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/dto/show_time/show_time_search.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/handler/http_response.dart';
 import 'package:movie_ticket_booking_admin_flutter_nlu/model/show_time.dart';
-import 'package:movie_ticket_booking_admin_flutter_nlu/provider/api_provider.dart';
 
 class ShowtimeProvider with ChangeNotifier {
   final apiProvider = ApiProvider.instance;
+  final token = AuthenticationService.instance.token;
   List<ShowTime> _showTimes = [];
 
   ShowTime? _showTime;
@@ -38,6 +39,7 @@ class ShowtimeProvider with ChangeNotifier {
         Uri.parse('$baseUrl/showtime/create'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
         },
         body: jsonEncode(showtime.toJson())
     );
@@ -50,6 +52,7 @@ class ShowtimeProvider with ChangeNotifier {
         Uri.parse('$baseUrl/showtime/update'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
         },
         body: jsonEncode(showtime.toJson())
     );
@@ -63,6 +66,7 @@ class ShowtimeProvider with ChangeNotifier {
         Uri.parse('$baseUrl/showtime/delete/$id'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
         },
     );
 

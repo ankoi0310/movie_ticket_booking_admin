@@ -1,15 +1,17 @@
 class RoutePath {
   final String? pathName;
-  final bool isUnknown;
+  final bool isNotfound;
 
-  RoutePath.home(this.pathName) : isUnknown = false;
+  RoutePath.login(this.pathName) : isNotfound = false;
 
-  RoutePath.otherPage(this.pathName) : isUnknown = false;
+  RoutePath.dashboard(this.pathName) : isNotfound = false;
 
-  RoutePath.unkown()
-      : pathName = null,
-        isUnknown = true;
+  RoutePath.otherPage(this.pathName) : isNotfound = false;
 
-  bool get isHomePage => pathName == null;
+  RoutePath.notFound(this.pathName) : isNotfound = true;
+
+  bool get isLoginPage => pathName == '/login';
+  bool get isDashboardPage => pathName == '/dashboard';
+
   bool get isOtherPage => pathName != null;
 }

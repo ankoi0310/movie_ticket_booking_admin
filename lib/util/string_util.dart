@@ -1,4 +1,7 @@
 import 'package:movie_ticket_booking_admin_flutter_nlu/core.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/model/auth/app_role.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/model/invoice.dart';
+import 'package:movie_ticket_booking_admin_flutter_nlu/model/seat.dart';
 
 class StringUtil {
   static String convert(String str) {
@@ -28,6 +31,16 @@ class StringUtil {
         return "2D";
     }
   }
+  static String changeSeatType(SeatType type) {
+    switch (type) {
+      case SeatType.normal:
+        return "Ghế đơn";
+      case SeatType.couple:
+        return "Ghế đôi";
+      default:
+        return "Ghế đơn";
+    }
+  }
   static String changeProductType(ProductType type) {
     switch (type) {
       case ProductType.drink:
@@ -38,6 +51,30 @@ class StringUtil {
         return "Vật phẩm";
       default:
         return "Thức uống";
+    }
+  }
+  static String changePaymentStatus(PaymentStatus status) {
+    switch (status) {
+      case PaymentStatus.pending:
+        return "Đang chờ thanh toán";
+      case PaymentStatus.success:
+        return "Đã thanh toán";
+      case PaymentStatus.failed:
+        return "Huỷ thanh toán";
+      default:
+        return "Đang chờ thanh toán";
+    }
+  }
+  static String changeRoleUser(String role) {
+    switch (role) {
+      case "ROLE_MANAGER":
+        return "Quản lý";
+      case "ROLE_ADMIN":
+        return "Admin";
+      case "ROLE_MEMBER":
+        return "Khách hàng";
+      default:
+        return "Khách hàng";
     }
   }
 }
