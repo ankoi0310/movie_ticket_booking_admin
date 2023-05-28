@@ -248,7 +248,7 @@ class UserDataTableSource extends DataTableSource {
                                         builder: (context, snapshot) {
                                           if (snapshot.hasData) {
                                             return Container(
-                                              width: SizeConfig.screenWidth * 0.7 * 0.4,
+                                              width: SizeConfig.screenWidth * 0.7 * 0.3,
                                               height: 230,
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
@@ -262,6 +262,8 @@ class UserDataTableSource extends DataTableSource {
                                             );
                                           }
                                           return Container(
+                                            width: SizeConfig.screenWidth * 0.7 * 0.3,
+                                            height: 230,
                                             child: Center(child: CircularProgressIndicator()),
                                           );
                                         })

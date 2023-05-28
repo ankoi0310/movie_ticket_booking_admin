@@ -325,7 +325,7 @@ class InvoiceDataTableSource extends DataTableSource {
                                               Container(
                                                 padding: const EdgeInsets.all(5),
                                                 child: Text(
-                                                  invoice.tickets[index].seat.code,
+                                                  ticket.seat.code,
                                                   style: const TextStyle(fontSize: 16),
                                                 ),
                                               ),
@@ -339,7 +339,7 @@ class InvoiceDataTableSource extends DataTableSource {
                                               Container(
                                                 padding: const EdgeInsets.all(5),
                                                 child: Text(
-                                                  StringUtil.changeSeatType(invoice.tickets[index].seat.seatType),
+                                                  StringUtil.changeSeatType(ticket.seat.seatType),
                                                   style: const TextStyle(fontSize: 16),
                                                 ),
                                               ),

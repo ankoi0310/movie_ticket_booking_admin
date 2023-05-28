@@ -98,7 +98,7 @@ class Room extends General {
       laneRows: List<int>.from((json['laneRows']).toList()),
       laneCols:List<int>.from((json['laneCols']).toList()),
       totalSeat: json['totalSeat'],
-      seats: (json['seats'] as List).map((e) => Seat.fromJson(e)).toList(),
+      seats: json['seats'] != null? (json['seats'] as List).map((e) => Seat.fromJson(e)).toList(): [],
       roomState: RoomState.fromValue(json['roomState']),
       type: RoomType.fromValue(json['type']),
       state: GeneralState.fromValue(json['state']),
