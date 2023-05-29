@@ -6,8 +6,6 @@ import 'package:movie_ticket_booking_admin_flutter_nlu/dto/movie/movie_search.da
 import 'package:movie_ticket_booking_admin_flutter_nlu/handler/http_response.dart';
 
 class StatisticScreen extends StatefulWidget {
-  static const String routeName = '/statistic';
-
   const StatisticScreen({Key? key}) : super(key: key);
 
   @override
@@ -24,51 +22,11 @@ class _StatisticScreenState extends State<StatisticScreen> {
   String selectedValue = statisticValue.entries.first.key;
   String selectedTimeline = statisticTimeline.entries.first.key;
   List<DropdownMenuItem<dynamic>> items = [];
-  dynamic selectedItem;
-
-  Future<void> getStatistic() async {
-    final timeline = StatisticTimeline.values
-        .firstWhere((element) => element.name == selectedTimeline);
-    switch (selectedValue) {
-      case 'revenue-per-branch':
-        await _statisticProvider.getStatistic(
-          StatisticFilter(
-            value: StatisticValue.revenue,
-            timeline: timeline,
-            branchId: selectedItem.id,
-          ),
-        );
-        break;
-      case 'revenue-per-movie':
-        await _statisticProvider.getStatistic(
-          StatisticFilter(
-            value: StatisticValue.revenue,
-            timeline: timeline,
-            movieId: selectedItem.id,
-          ),
-        );
-        break;
-      case 'ticket':
-        await _statisticProvider.getStatistic(
-          StatisticFilter(
-            value: StatisticValue.ticket,
-            timeline: timeline,
-          ),
-        );
-        break;
-      default:
-        await _statisticProvider.getStatistic(
-          StatisticFilter(
-            value: StatisticValue.revenue,
-            timeline: timeline,
-          ),
-        );
-        break;
-    }
-  }
+  int selectedItem = 0;
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -173,7 +131,7 @@ class _StatisticScreenState extends State<StatisticScreen> {
                     value: selectedTimeline,
                     onChanged: (value) {
                       setState(() {
-                        selectedTimeline = value.toString();
+                        selectedTimeline = value!;
                       });
                     },
                     buttonStyleData: ButtonStyleData(
@@ -268,9 +226,6 @@ class _StatisticScreenState extends State<StatisticScreen> {
                         setState(() {
                           selectedItem = value;
                         });
-                        print(selectedValue);
-                        print(selectedTimeline);
-                        print(selectedItem);
                       },
                       buttonStyleData: ButtonStyleData(
                         width: Responsive.isDesktop(context)
@@ -318,9 +273,6 @@ class _StatisticScreenState extends State<StatisticScreen> {
                       setState(() {
                         selectedTimeline = value.toString();
                       });
-                      print(selectedValue);
-                      print(selectedTimeline);
-                      print(selectedItem);
                     },
                     buttonStyleData: ButtonStyleData(
                       width: Responsive.isDesktop(context)
@@ -361,26 +313,28 @@ class _StatisticScreenState extends State<StatisticScreen> {
               ),
         const SizedBox(height: 40),
         FutureBuilder(
-            future: _statisticProvider.getStatistic(
-              StatisticFilter(
-                value: StatisticValue.revenue,
-                timeline: StatisticTimeline.day,
-                branchId: selectedItem,
-              ),
+          future: _statisticProvider.getStatistic(
+            StatisticFilter(
+              value: selectedValue,
+              timeline: selectedTimeline,
+              branchId: selectedItem,
+              movieId: selectedItem,
             ),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                HttpResponse response = snapshot.data as HttpResponse;
-                return SizedBox(
-                  height: SizeConfig.screenHeight * 0.6,
-                  child: BarChartCopmponent(
-                      data: Map.from(response.data),
-                      timeline: StatisticTimeline.day),
-                );
-              }
+          ),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              HttpResponse response = snapshot.data as HttpResponse;
+              return SizedBox(
+                height: SizeConfig.screenHeight * 0.6,
+                child: BarChartCopmponent(
+                  data: Map.from(response.data),
+                ),
+              );
+            }
 
-              return const SizedBox();
-            })
+            return const SizedBox();
+          },
+        ),
       ],
     );
   }
@@ -391,7 +345,7 @@ class _StatisticScreenState extends State<StatisticScreen> {
     });
 
     switch (value.toString()) {
-      case 'revenue-per-branch':
+      case 'BRANCH':
         _branchProvider.getBranches(BranchSearch()).then((response) {
           if (response.success) {
             Map<int, String> branches = {
@@ -401,13 +355,10 @@ class _StatisticScreenState extends State<StatisticScreen> {
               items = AppUtil.createDropdownDetailList(data: branches);
               selectedItem = items.first.value;
             });
-            print(selectedValue);
-            print(selectedTimeline);
-            print(selectedItem);
           }
         });
         break;
-      case 'revenue-per-movie':
+      case 'MOVIE':
         _movieProvider.getMovies(MovieSearch()).then((response) {
           if (response.success) {
             Map<int, String> movies = {
@@ -417,17 +368,13 @@ class _StatisticScreenState extends State<StatisticScreen> {
               items = AppUtil.createDropdownDetailList(data: movies);
               selectedItem = items.first.value;
             });
-            print(selectedValue);
-            print(selectedTimeline);
-            print(selectedItem);
           }
         });
         break;
       default:
-        items = [];
-        print(selectedValue);
-        print(selectedTimeline);
-        print(selectedItem);
+        setState(() {
+          items = [];
+        });
         break;
     }
   }

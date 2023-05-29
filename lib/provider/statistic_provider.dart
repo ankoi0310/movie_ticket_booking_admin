@@ -8,7 +8,8 @@ import 'package:movie_ticket_booking_admin_flutter_nlu/handler/http_response.dar
 enum StatisticValue {
   revenue('REVENUE'),
   ticket('TICKET'),
-  movie('MOVIE');
+  movie('MOVIE'),
+  branch('BRANCH');
 
   final String name;
 
@@ -27,22 +28,22 @@ enum StatisticTimeline {
 }
 
 class StatisticFilter {
-  StatisticValue? value;
-  StatisticTimeline? timeline;
-  int? movieId;
-  int? branchId;
+  String value;
+  String timeline;
+  int movieId;
+  int branchId;
 
   StatisticFilter({
-    this.value,
-    this.timeline,
-    this.movieId,
-    this.branchId,
+    required this.value,
+    required this.timeline,
+    this.movieId = 0,
+    this.branchId = 0,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'value': value?.name,
-      'timeline': timeline?.name,
+      'value': value,
+      'timeline': timeline,
       'movieId': movieId,
       'branchId': branchId,
     };
@@ -54,6 +55,7 @@ class StatisticProvider with ChangeNotifier {
   final token = AuthenticationService.instance.token;
 
   Future<HttpResponse> getStatistic(StatisticFilter filter) async {
+    print(filter.toJson());
     HttpResponse response = await _apiProvider.post(
       Uri.parse('$baseUrl/statistic'),
       headers: {
@@ -62,6 +64,7 @@ class StatisticProvider with ChangeNotifier {
       },
       body: jsonEncode(filter.toJson()),
     );
+
     print(response.data);
 
     notifyListeners();

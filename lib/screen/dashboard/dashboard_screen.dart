@@ -53,8 +53,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         SizedBox(height: SizeConfig.blockSizeVertical * 3),
         FutureBuilder(
             future: _statisticProvider.getStatistic(StatisticFilter(
-              value: StatisticValue.revenue,
-              timeline: StatisticTimeline.week,
+              value: StatisticValue.revenue.name,
+              timeline: StatisticTimeline.week.name,
             )),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
@@ -62,10 +62,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                 return SizedBox(
                   height: 180,
-                  child: BarChartCopmponent(
-                    data: Map.from(response.data),
-                    timeline: StatisticTimeline.week,
-                  ),
+                  child: BarChartCopmponent(data: Map.from(response.data)),
                 );
               }
 

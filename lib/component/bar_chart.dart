@@ -6,31 +6,12 @@ class BarChartCopmponent extends StatelessWidget {
   const BarChartCopmponent({
     Key? key,
     required this.data,
-    required this.timeline,
   }) : super(key: key);
 
   final Map<String, int> data;
-  final StatisticTimeline timeline;
 
   @override
   Widget build(BuildContext context) {
-    int length = 0;
-
-    switch (timeline) {
-      case StatisticTimeline.week:
-        length = 7;
-        break;
-      case StatisticTimeline.month:
-        length = 30;
-        break;
-      case StatisticTimeline.year:
-        length = 12;
-        break;
-      case StatisticTimeline.day:
-        length = 1;
-        break;
-    }
-
     return BarChart(
       BarChartData(
         borderData: FlBorderData(show: false),
